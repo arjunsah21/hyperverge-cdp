@@ -1,9 +1,12 @@
 import json
 import os
+import logging
 from jinja2 import Template
 from typing import Dict, Any
 from openai import OpenAI
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 # Define the schema context for the LLM
 SEGMENT_FIELDS = [
@@ -40,7 +43,7 @@ def get_prompt_template() -> str:
         with open(PROMPT_TEMPLATE_PATH, "r") as f:
             return f.read()
     except FileNotFoundError:
-        # Fallback if file not found (e.g. during testing)
+        logger.warning(f"Prompt template not found at {PROMPT_TEMPLATE_PATH}, using fallback.")
         return """You are a CDP Expert. Extract segment rules from this query: {{ user_query }}."""
 
 def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
@@ -49,6 +52,8 @@ def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
     Uses OpenAI API (via Proxy).
     """
     try:
+        logger.info(f"Generating segment for query: '{user_query}'")
+        
         # 1. Render the System Prompt
         template_str = get_prompt_template()
         template = Template(template_str)
@@ -59,6 +64,8 @@ def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
         )
         
         # 2. CALL LLM
+        logger.debug("Calling OpenAI API via Proxy...")
+        
         # Note: Using 'user' role instead of 'system' for better compatibility 
         # with various proxies (some Gemini/Vertex proxies strictly require 'user')
         response = client.chat.completions.create(
@@ -71,6 +78,8 @@ def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
         )
         
         content = response.choices[0].message.content
+        logger.debug(f"Received raw AI response: {content}")
+        
         result = json.loads(content)
         
         # Ensure all rule values are strings (fixes Pydantic validation error for numbers)
@@ -79,10 +88,11 @@ def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
                 if "value" in rule:
                     rule["value"] = str(rule["value"])
         
+        logger.info(f"Successfully generated segment: {result.get('name', 'Unnamed')}")
         return result
 
     except Exception as e:
-        print(f"Error calling AI Service: {e}")
+        logger.error(f"Error calling AI Service: {e}", exc_info=True)
         # Return empty structure on error
         return {
             "name": "",

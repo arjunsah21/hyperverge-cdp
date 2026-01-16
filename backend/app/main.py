@@ -7,10 +7,15 @@ from contextlib import asynccontextmanager
 from app.database import engine, Base
 from app.seed_data import seed_database
 from app.routers import dashboard, customers, orders, inventory, segments, flows
+from app.core.logger import setup_logging
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize Logging
+    logger = setup_logging()
+    logger.info("Application starting up... Logging initialized.")
+
     # Create tables and seed data on startup
     Base.metadata.create_all(bind=engine)
     seed_database()
