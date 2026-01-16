@@ -140,7 +140,10 @@ erDiagram
   - Features: Status Tabs, Order Lookup, Detail View.
 - **`Segments.jsx`**:
   - Features: Rule builder for creating dynamic customer segments.
-  - **AI Integration**: Natural language input with loading state and type-writer feedback.
+  - **AI Integration**: Natural language input via `AIInput` component in `Drawer`.
+- **`Flows.jsx`**:
+  - Features: Email sequence builder (Subject, Content, Delays).
+  - **AI Integration**: Context-aware generation of full flow structure including segment selection.
 - **`Dashboard.jsx`**:
   - Features: Real-time metrics visualization (Sales, AOV, Active Customers).
 
@@ -160,6 +163,9 @@ erDiagram
 
 - `POST /api/segments/preview`: Preview customers matching specific rules (Dynamic Evaluation).
 - `POST /api/segments/ai-generate`: Transform natural language to segment rules.
+
+#### Flow Endpoints
+- `POST /api/flows/ai-generate`: Generate flow structure (Name, Steps, Segment) from prompt.
 
 ### AI Architecture
 - **Service Layer**: `ai_service.py` handles LLM interactions.

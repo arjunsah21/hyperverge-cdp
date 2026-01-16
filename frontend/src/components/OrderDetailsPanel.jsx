@@ -2,194 +2,159 @@ import { useState, useEffect } from 'react';
 import { X, Package, MapPin, User, Calendar, Hash } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { ordersAPI } from '../services/api';
+import Drawer from './Drawer';
 
 function OrderDetailsPanel({ orderId, isOpen, onClose, onCustomerClick }) {
-    const [orderDetails, setOrderDetails] = useState(null);
-    const [loading, setLoading] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (isOpen && orderId) {
-            fetchOrderDetails();
-        } else {
-            setOrderDetails(null);
-        }
-    }, [isOpen, orderId]);
+  useEffect(() => {
+    if (isOpen && orderId) {
+      fetchOrderDetails();
+    } else {
+      setOrderDetails(null);
+    }
+  }, [isOpen, orderId]);
 
-    const fetchOrderDetails = async () => {
-        setLoading(true);
-        try {
-            const data = await ordersAPI.getById(orderId);
-            setOrderDetails(data);
-        } catch (error) {
-            console.error('Failed to fetch order details:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchOrderDetails = async () => {
+    setLoading(true);
+    try {
+      const data = await ordersAPI.getById(orderId);
+      setOrderDetails(data);
+    } catch (error) {
+      console.error('Failed to fetch order details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        }).format(value || 0);
-    };
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(value || 0);
+  };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-    if (!isOpen) return null;
-
-    return (
-        <div className="order-details-panel">
-            <div className="details-header">
-                <h2>Order Details</h2>
-                <button className="btn-icon" onClick={onClose}>
-                    <X size={20} />
-                </button>
+  return (
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Order Details"
+      width="500px"
+    >
+      {loading ? (
+        <div className="details-loading">Loading order details...</div>
+      ) : orderDetails ? (
+        <div className="details-content">
+          {/* Order Info */}
+          <div className="order-info-header">
+            <div className="order-id-display">
+              <Hash size={20} />
+              <span>{orderDetails.order_id}</span>
             </div>
+            <StatusBadge status={orderDetails.status} />
+          </div>
 
-            {loading ? (
-                <div className="details-loading">Loading order details...</div>
-            ) : orderDetails ? (
-                <div className="details-content">
-                    {/* Order Info */}
-                    <div className="order-info-header">
-                        <div className="order-id-display">
-                            <Hash size={20} />
-                            <span>{orderDetails.order_id}</span>
-                        </div>
-                        <StatusBadge status={orderDetails.status} />
-                    </div>
+          <div className="info-row">
+            <Calendar size={16} />
+            <span>{formatDate(orderDetails.date)}</span>
+          </div>
 
-                    <div className="info-row">
-                        <Calendar size={16} />
-                        <span>{formatDate(orderDetails.date)}</span>
-                    </div>
+          {/* Customer Info */}
+          <div className="info-section">
+            <h4><User size={16} /> Customer</h4>
+            <div
+              className={`customer-card ${onCustomerClick ? 'clickable' : ''}`}
+              onClick={() => onCustomerClick && onCustomerClick(orderDetails.customer.id)}
+            >
+              <div className="customer-avatar">
+                {orderDetails.customer.avatar_url ? (
+                  <img src={orderDetails.customer.avatar_url} alt="" />
+                ) : (
+                  orderDetails.customer.initials
+                )}
+              </div>
+              <div className="customer-info">
+                <div className="customer-name">{orderDetails.customer.name}</div>
+                <div className="customer-email">{orderDetails.customer.email}</div>
+                {orderDetails.customer.phone && (
+                  <div className="customer-phone">{orderDetails.customer.phone}</div>
+                )}
+              </div>
+              <StatusBadge status={orderDetails.customer.status} />
+            </div>
+          </div>
 
-                    {/* Customer Info */}
-                    <div className="info-section">
-                        <h4><User size={16} /> Customer</h4>
-                        <div
-                            className={`customer-card ${onCustomerClick ? 'clickable' : ''}`}
-                            onClick={() => onCustomerClick && onCustomerClick(orderDetails.customer.id)}
-                        >
-                            <div className="customer-avatar">
-                                {orderDetails.customer.avatar_url ? (
-                                    <img src={orderDetails.customer.avatar_url} alt="" />
-                                ) : (
-                                    orderDetails.customer.initials
-                                )}
-                            </div>
-                            <div className="customer-info">
-                                <div className="customer-name">{orderDetails.customer.name}</div>
-                                <div className="customer-email">{orderDetails.customer.email}</div>
-                                {orderDetails.customer.phone && (
-                                    <div className="customer-phone">{orderDetails.customer.phone}</div>
-                                )}
-                            </div>
-                            <StatusBadge status={orderDetails.customer.status} />
-                        </div>
-                    </div>
+          {/* Shipping Address */}
+          {orderDetails.shipping_address && (
+            <div className="info-section">
+              <h4><MapPin size={16} /> Shipping Address</h4>
+              <p className="shipping-address">{orderDetails.shipping_address}</p>
+            </div>
+          )}
 
-                    {/* Shipping Address */}
-                    {orderDetails.shipping_address && (
-                        <div className="info-section">
-                            <h4><MapPin size={16} /> Shipping Address</h4>
-                            <p className="shipping-address">{orderDetails.shipping_address}</p>
-                        </div>
+          {/* Order Items */}
+          <div className="info-section">
+            <h4><Package size={16} /> Items ({orderDetails.items_count})</h4>
+            <div className="order-items-list">
+              {orderDetails.items.map((item, idx) => (
+                <div key={idx} className="order-item-card">
+                  <div className="item-image">
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.product_name} />
+                    ) : (
+                      <Package size={24} />
                     )}
-
-                    {/* Order Items */}
-                    <div className="info-section">
-                        <h4><Package size={16} /> Items ({orderDetails.items_count})</h4>
-                        <div className="order-items-list">
-                            {orderDetails.items.map((item, idx) => (
-                                <div key={idx} className="order-item-card">
-                                    <div className="item-image">
-                                        {item.image_url ? (
-                                            <img src={item.image_url} alt={item.product_name} />
-                                        ) : (
-                                            <Package size={24} />
-                                        )}
-                                    </div>
-                                    <div className="item-details">
-                                        <div className="item-name">{item.product_name}</div>
-                                        <div className="item-sku">SKU: {item.sku}</div>
-                                        <div className="item-qty">Qty: {item.quantity}</div>
-                                    </div>
-                                    <div className="item-price">
-                                        <div className="item-unit-price">{formatCurrency(item.price)} each</div>
-                                        <div className="item-total">{formatCurrency(item.total)}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="order-summary">
-                        <div className="summary-row">
-                            <span>Subtotal ({orderDetails.items_count} items)</span>
-                            <span>{formatCurrency(orderDetails.total_amount)}</span>
-                        </div>
-                        <div className="summary-row">
-                            <span>Shipping</span>
-                            <span>Free</span>
-                        </div>
-                        <div className="summary-row total">
-                            <span>Total</span>
-                            <span>{formatCurrency(orderDetails.total_amount)}</span>
-                        </div>
-                    </div>
+                  </div>
+                  <div className="item-details">
+                    <div className="item-name">{item.product_name}</div>
+                    <div className="item-sku">SKU: {item.sku}</div>
+                    <div className="item-qty">Qty: {item.quantity}</div>
+                  </div>
+                  <div className="item-price">
+                    <div className="item-unit-price">{formatCurrency(item.price)} each</div>
+                    <div className="item-total">{formatCurrency(item.total)}</div>
+                  </div>
                 </div>
-            ) : null}
+              ))}
+            </div>
+          </div>
 
-            <style>{`
-        .order-details-panel {
-          position: fixed;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 450px;
-          background-color: var(--color-bg-secondary);
-          border-left: 1px solid var(--color-border);
-          z-index: 100;
-          overflow-y: auto;
-        }
+          {/* Order Summary */}
+          <div className="order-summary">
+            <div className="summary-row">
+              <span>Subtotal ({orderDetails.items_count} items)</span>
+              <span>{formatCurrency(orderDetails.total_amount)}</span>
+            </div>
+            <div className="summary-row">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+            <div className="summary-row total">
+              <span>Total</span>
+              <span>{formatCurrency(orderDetails.total_amount)}</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
-        .details-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: var(--spacing-lg);
-          border-bottom: 1px solid var(--color-border);
-          position: sticky;
-          top: 0;
-          background-color: var(--color-bg-secondary);
-        }
-
-        .details-header h2 {
-          font-size: var(--font-size-lg);
-          font-weight: 600;
-        }
-
+      <style>{`
         .details-loading {
           padding: var(--spacing-xl);
           text-align: center;
           color: var(--color-text-muted);
-        }
-
-        .details-content {
-          padding: var(--spacing-lg);
         }
 
         .order-info-header {
@@ -389,8 +354,8 @@ function OrderDetailsPanel({ orderId, isOpen, onClose, onCustomerClick }) {
           color: var(--color-text-primary);
         }
       `}</style>
-        </div>
-    );
+    </Drawer>
+  );
 }
 
 export default OrderDetailsPanel;

@@ -457,6 +457,18 @@ The system uses OpenAI's GPT models to translate natural language into structure
     4.  Values are strictly type-coerced to strings to match the database schema.
 - **Output**: JSON payload with `name`, `description`, `logic`, and `rules`.
 
+### AI Flow Generation logic
+
+The system uses OpenAI to design entire email marketing flows.
+
+- **Input**: User Query + List of existing DB Segments (JSON context).
+- **Process**:
+    1.  **Context Injection**: The `flow_prompt.j2` template receives a lightweight list of all available segments `[{id, name, description}]`.
+    2.  **Intent Analysis**: The LLM determines if the user wants to target a specific existing segment or needs a new context.
+    3.  **Content Generation**: The LLM writes "Subject Lines" and "Email Body" content appropriate for the goal.
+    4.  **Structure Generation**: Returns a JSON object with `FlowCreate` schema (Steps, Delays, Trigger).
+- **Output**: JSON payload validated against Pydantic schema.
+
 ### Logging Strategy
 
 To ensure reliability and debuggability, the backend implements a specialized logging strategy:

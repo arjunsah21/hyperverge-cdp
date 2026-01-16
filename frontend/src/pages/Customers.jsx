@@ -5,6 +5,7 @@ import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
 import CustomerDetailsPanel from '../components/CustomerDetailsPanel';
 import OrderDetailsPanel from '../components/OrderDetailsPanel';
+import Drawer from '../components/Drawer';
 import { customersAPI } from '../services/api';
 
 function Customers() {
@@ -270,171 +271,135 @@ function EditCustomerModal({ customer, onClose, onSaved }) {
     };
 
     return (
-        <div className="edit-modal-overlay" onClick={onClose}>
-            <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="edit-modal-header">
-                    <h2>Edit Customer</h2>
-                    <button className="btn-icon" onClick={onClose}>
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="edit-modal-form">
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>First Name</label>
-                            <input
-                                type="text"
-                                value={formData.first_name}
-                                onChange={(e) => handleChange('first_name', e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Last Name</label>
-                            <input
-                                type="text"
-                                value={formData.last_name}
-                                onChange={(e) => handleChange('last_name', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
+        <Drawer
+            isOpen={true}
+            onClose={onClose}
+            title="Edit Customer"
+            width="500px"
+        >
+            <form onSubmit={handleSubmit} className="edit-modal-form">
+                <div className="form-row">
                     <div className="form-group">
-                        <label>Email</label>
+                        <label>First Name</label>
                         <input
-                            type="email"
-                            value={formData.email}
-                            onChange={(e) => handleChange('email', e.target.value)}
-                            required
+                            type="text"
+                            value={formData.first_name}
+                            onChange={(e) => handleChange('first_name', e.target.value)}
                         />
                     </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Phone</label>
-                            <input
-                                type="text"
-                                value={formData.phone}
-                                onChange={(e) => handleChange('phone', e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Status</label>
-                            <select
-                                value={formData.status}
-                                onChange={(e) => handleChange('status', e.target.value)}
-                            >
-                                <option value="VIP">VIP</option>
-                                <option value="ACTIVE">Active</option>
-                                <option value="REGULAR">Regular</option>
-                                <option value="NEW">New</option>
-                                <option value="CHURNED">Churned</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>City</label>
-                            <input
-                                type="text"
-                                value={formData.city}
-                                onChange={(e) => handleChange('city', e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>State</label>
-                            <input
-                                type="text"
-                                value={formData.state}
-                                onChange={(e) => handleChange('state', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
                     <div className="form-group">
-                        <label>Acquisition Source</label>
+                        <label>Last Name</label>
+                        <input
+                            type="text"
+                            value={formData.last_name}
+                            onChange={(e) => handleChange('last_name', e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div className="form-group">
+                    <label>Email</label>
+                    <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleChange('email', e.target.value)}
+                        required
+                    />
+                </div>
+
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>Phone</label>
+                        <input
+                            type="text"
+                            value={formData.phone}
+                            onChange={(e) => handleChange('phone', e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Status</label>
                         <select
-                            value={formData.source}
-                            onChange={(e) => handleChange('source', e.target.value)}
+                            value={formData.status}
+                            onChange={(e) => handleChange('status', e.target.value)}
                         >
-                            <option value="">Select source...</option>
-                            <option value="organic">Organic</option>
-                            <option value="paid_search">Paid Search</option>
-                            <option value="social">Social</option>
-                            <option value="referral">Referral</option>
-                            <option value="email">Email</option>
-                            <option value="direct">Direct</option>
+                            <option value="VIP">VIP</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="REGULAR">Regular</option>
+                            <option value="NEW">New</option>
+                            <option value="CHURNED">Churned</option>
                         </select>
                     </div>
+                </div>
 
-                    <div className="form-row">
-                        <div className="form-group checkbox-group">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.email_opt_in}
-                                    onChange={(e) => handleChange('email_opt_in', e.target.checked)}
-                                />
-                                Email Marketing Opt-in
-                            </label>
-                        </div>
-                        <div className="form-group checkbox-group">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.sms_opt_in}
-                                    onChange={(e) => handleChange('sms_opt_in', e.target.checked)}
-                                />
-                                SMS Marketing Opt-in
-                            </label>
-                        </div>
+                <div className="form-row">
+                    <div className="form-group">
+                        <label>City</label>
+                        <input
+                            type="text"
+                            value={formData.city}
+                            onChange={(e) => handleChange('city', e.target.value)}
+                        />
                     </div>
-
-                    <div className="edit-modal-actions">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn btn-primary" disabled={loading}>
-                            {loading ? 'Saving...' : 'Save Changes'}
-                        </button>
+                    <div className="form-group">
+                        <label>State</label>
+                        <input
+                            type="text"
+                            value={formData.state}
+                            onChange={(e) => handleChange('state', e.target.value)}
+                        />
                     </div>
-                </form>
+                </div>
 
-                <style>{`
-          .edit-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-          }
+                <div className="form-group">
+                    <label>Acquisition Source</label>
+                    <select
+                        value={formData.source}
+                        onChange={(e) => handleChange('source', e.target.value)}
+                    >
+                        <option value="">Select source...</option>
+                        <option value="organic">Organic</option>
+                        <option value="paid_search">Paid Search</option>
+                        <option value="social">Social</option>
+                        <option value="referral">Referral</option>
+                        <option value="email">Email</option>
+                        <option value="direct">Direct</option>
+                    </select>
+                </div>
 
-          .edit-modal {
-            background-color: var(--color-bg-secondary);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--color-border);
-          }
+                <div className="form-row">
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={formData.email_opt_in}
+                                onChange={(e) => handleChange('email_opt_in', e.target.checked)}
+                            />
+                            Email Marketing Opt-in
+                        </label>
+                    </div>
+                    <div className="form-group checkbox-group">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={formData.sms_opt_in}
+                                onChange={(e) => handleChange('sms_opt_in', e.target.checked)}
+                            />
+                            SMS Marketing Opt-in
+                        </label>
+                    </div>
+                </div>
 
-          .edit-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-lg);
-            border-bottom: 1px solid var(--color-border);
-          }
+                <div className="edit-modal-actions">
+                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                        Cancel
+                    </button>
+                    <button type="submit" className="btn btn-primary" disabled={loading}>
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
 
-          .edit-modal-header h2 {
-            font-size: var(--font-size-lg);
-            font-weight: 600;
-          }
-
+            <style>{`
           .edit-modal-form {
             padding: var(--spacing-lg);
           }
@@ -487,8 +452,7 @@ function EditCustomerModal({ customer, onClose, onSaved }) {
             border-top: 1px solid var(--color-border);
           }
         `}</style>
-            </div>
-        </div>
+        </Drawer>
     );
 }
 
