@@ -42,7 +42,26 @@ e-comm/
 │   │   │   └── ...
 ```
 
-## 🚀 Quick Start
+## � Documentation
+
+For a deeper dive into the system's architecture and logic, refer to the following documents:
+
+- **[DESIGN.md](./DESIGN.md)**
+  - **Purpose**: Technical blueprint and architectural overview.
+  - **Contents**:
+    - **Frontend Architecture**: Component hierarchy, state management (Drawers, Context), and key UI patterns.
+    - **Backend Design**: API schema, database relationship diagrams (ERD), and directory structure.
+    - **AI Architecture**: Details on the OpenAI integration, prompt engineering strategies (`flow_prompt.j2`), and the "AI Proxy" service layer.
+
+- **[BUSINESS_LOGIC.md](./BUSINESS_LOGIC.md)**
+  - **Purpose**: functional specifications and business rules.
+  - **Contents**:
+    - **Core Metrics**: Formulas for CLV (Customer Lifetime Value), AOV, and Churn Rate.
+    - **Customer Tiers**: Logic defining VIP, Active, and Churned statuses.
+    - **Segment Rules**: Detailed criteria for dynamic customer grouping (e.g., "High Spenders from CA").
+    - **Flow Logic**: step-by-step execution rules for email sequences and delay handling.
+
+## �🚀 Quick Start
 
 ### Prerequisites
 
