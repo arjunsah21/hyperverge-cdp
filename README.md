@@ -6,12 +6,14 @@ A modern, full-stack e-commerce admin dashboard built with **React** (frontend) 
 
 ## ✨ Features
 
-- **Dashboard Overview** - Key metrics, charts, top products, and intelligence feed
-- **Customer Management** - Search, filter, sort, and paginate through customers
-- **Order Tracking** - Filter orders by status (Pending, Shipped, Cancelled)
-- **Inventory Management** - Stock levels, low stock alerts, and predicted needs
-- **Dark Theme UI** - Modern, professional design with smooth animations
-- **RESTful API** - Clean API architecture with FastAPI and SQLite
+- **Dashboard Overview** - Key metrics, real-time charts, and insights
+- **Customer Management** - Search, filter, edit, and tier-based segmentation (Diamond, Platinum, etc.)
+- **Order Tracking** - Status tracking, order details, and history
+- **Inventory Management** - Stock levels, low stock alerts, and categorization
+- **Customer Segments** - Create dynamic groups based on rules (e.g., "High Spenders from Texas")
+- **Email Flows** - Automated email sequences triggered by segments or events
+- **Dark Theme UI** - Modern, professional design with consistent side-panel navigation
+- **RESTful API** - Scalable API architecture with FastAPI
 
 ## 📁 Project Structure
 
@@ -19,46 +21,24 @@ A modern, full-stack e-commerce admin dashboard built with **React** (frontend) 
 e-comm/
 ├── backend/                    # FastAPI Backend
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py            # FastAPI app entry point
-│   │   ├── database.py        # SQLite database configuration
-│   │   ├── models.py          # SQLAlchemy ORM models
-│   │   ├── schemas.py         # Pydantic schemas
-│   │   ├── seed_data.py       # Dummy data generator
+│   │   ├── ...
+│   │   ├── models.py          # Extended Customer, Order, Segment, Flow models
 │   │   └── routers/
-│   │       ├── __init__.py
-│   │       ├── dashboard.py   # Dashboard stats endpoints
-│   │       ├── customers.py   # Customer CRUD endpoints
-│   │       ├── orders.py      # Orders endpoints
-│   │       └── inventory.py   # Inventory endpoints
-│   └── requirements.txt       # Python dependencies
+│   │       ├── ...
+│   │       ├── segments.py    # Segments endpoints
+│   │       └── flows.py       # Email Flows endpoints
 │
 ├── frontend/                   # React Frontend
-│   ├── public/
 │   ├── src/
 │   │   ├── components/        # Reusable UI components
+│   │   │   ├── CustomerDetailsPanel.jsx  # Standardized customer view
+│   │   │   ├── OrderDetailsPanel.jsx     # Standardized order view
 │   │   │   ├── Sidebar.jsx
-│   │   │   ├── Header.jsx
-│   │   │   ├── MetricCard.jsx
-│   │   │   ├── StatusBadge.jsx
-│   │   │   └── Pagination.jsx
-│   │   ├── pages/             # Page components
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Customers.jsx
-│   │   │   ├── Orders.jsx
-│   │   │   └── Inventory.jsx
-│   │   ├── services/          # API service layer
-│   │   │   └── api.js
-│   │   ├── styles/            # CSS stylesheets
-│   │   │   └── index.css
-│   │   ├── App.jsx            # Main app with routing
-│   │   └── main.jsx           # React entry point
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-│
-├── .gitignore
-└── README.md
+│   │   │   └── ...
+│   │   ├── pages/
+│   │   │   ├── Segments.jsx
+│   │   │   ├── Flows.jsx
+│   │   │   └── ...
 ```
 
 ## 🚀 Quick Start

@@ -415,3 +415,28 @@ LIMIT 3
 - `POST /api/flows/{id}/steps` - Add step
 - `PUT /api/flows/{id}/steps/{step_id}` - Update step
 - `DELETE /api/flows/{id}/steps/{step_id}` - Delete step
+
+## UI Flow Documentation
+
+### Customer & Order Navigation
+
+The application implements a bi-directional navigation pattern between Customer Details and Order Details to keep users in context without full page reloads.
+
+#### Pattern
+- **Side Panel Architecture**: Both Customer Details and Order Details are implemented as overlay side panels.
+- **Context Preservation**: The underlying page (Customers list or Orders list) remains visible and maintains its state (scroll position, filters).
+
+#### Interaction Flows
+
+**1. From Customers Page:**
+- Click Customer Name -> Opens **Customer Details Panel**
+- In Customer Panel, Click Order ID -> Closes Customer Panel -> Opens **Order Details Panel**
+- In Order Panel, Click Customer Name -> Closes Order Panel -> Opens **Customer Details Panel**
+
+**2. From Orders Page:**
+- Click Order ID -> Opens **Order Details Panel**
+- In Order Panel, Click Customer Name -> Closes Order Panel -> Opens **Customer Details Panel**
+- In Customer Panel, Click Order ID -> Closes Customer Panel -> Opens **Order Details Panel**
+
+This circular navigation allows seamless exploration of relationships:
+`Customer -> Their Order -> That Customer -> Another Order...`

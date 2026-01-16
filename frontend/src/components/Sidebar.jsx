@@ -12,11 +12,11 @@ import {
 
 const navItems = [
   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/customers', icon: Users, label: 'Customers' },
   { path: '/segments', icon: Filter, label: 'Segments' },
   { path: '/flows', icon: Mail, label: 'Email Flows' },
   { path: '/orders', icon: ShoppingCart, label: 'Orders' },
   { path: '/inventory', icon: Package, label: 'Inventory' },
+  { path: '/customers', icon: Users, label: 'Customers' },
 ];
 
 function Sidebar() {

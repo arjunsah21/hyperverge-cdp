@@ -98,22 +98,55 @@ async def get_orders(
     )
 
 
-@router.get("/{order_id}", response_model=OrderResponse)
-async def get_order(order_id: int, db: Session = Depends(get_db)):
-    """Get a single order by ID"""
+@router.get("/{order_id}")
+async def get_order_details(order_id: int, db: Session = Depends(get_db)):
+    """Get detailed order by ID with items and customer info"""
+    from app.models import OrderItem, Product
     
     order = db.query(Order).join(Customer).filter(Order.id == order_id).first()
     
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
-    return OrderResponse(
-        id=order.id,
-        order_id=order.order_id,
-        customer_id=order.customer_id,
-        customer_name=get_customer_name(order.customer),
-        customer_initials=get_initials(order.customer.first_name, order.customer.last_name),
-        date=order.date,
-        status=order.status,
-        total_amount=order.total_amount
-    )
+    # Get order items with product details
+    items = db.query(
+        OrderItem.quantity,
+        OrderItem.price_at_purchase,
+        Product.id.label('product_id'),
+        Product.name.label('product_name'),
+        Product.image_url,
+        Product.sku
+    ).join(Product).filter(OrderItem.order_id == order.id).all()
+    
+    items_data = [
+        {
+            "product_id": item.product_id,
+            "product_name": item.product_name,
+            "sku": item.sku,
+            "quantity": item.quantity,
+            "price": item.price_at_purchase,
+            "total": round(item.quantity * item.price_at_purchase, 2),
+            "image_url": item.image_url
+        }
+        for item in items
+    ]
+    
+    return {
+        "id": order.id,
+        "order_id": order.order_id,
+        "date": order.date.isoformat() if order.date else None,
+        "status": order.status,
+        "total_amount": order.total_amount,
+        "shipping_address": order.shipping_address,
+        "items": items_data,
+        "items_count": len(items_data),
+        "customer": {
+            "id": order.customer.id,
+            "name": get_customer_name(order.customer),
+            "email": order.customer.email,
+            "phone": order.customer.phone,
+            "avatar_url": order.customer.avatar_url,
+            "status": order.customer.status,
+            "initials": get_initials(order.customer.first_name, order.customer.last_name)
+        }
+    }
