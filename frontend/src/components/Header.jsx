@@ -7,6 +7,8 @@ const pageTitles = {
   '/customers': 'Customer List',
   '/orders': 'Orders Management',
   '/inventory': 'Inventory Management',
+  '/segments': 'Customer Segments',
+  '/flows': 'Email Flows',
 };
 
 function Header() {

@@ -3,28 +3,22 @@ import {
     Users,
     DollarSign,
     TrendingUp,
-    AlertTriangle,
-    Package,
     ShoppingCart,
-    Sparkles
+    Package,
+    MapPin
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { dashboardAPI } from '../services/api';
 
 function Dashboard() {
     const [stats, setStats] = useState(null);
-    const [insights, setInsights] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [statsData, insightsData] = await Promise.all([
-                    dashboardAPI.getStats(),
-                    dashboardAPI.getInsights()
-                ]);
+                const statsData = await dashboardAPI.getStats();
                 setStats(statsData);
-                setInsights(insightsData.insights || []);
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error);
             } finally {
@@ -63,8 +57,9 @@ function Dashboard() {
                 <p className="page-subtitle">Welcome back, here's what's happening today.</p>
             </div>
 
-            {/* Main Metrics */}
-            <div className="metric-cards-grid">
+            {/* Main Metrics - 6 Cards */}
+            <div className="dashboard-cards-grid">
+                {/* Card 1: Total Customers */}
                 <MetricCard
                     icon={Users}
                     label="Total Customers"
@@ -72,38 +67,46 @@ function Dashboard() {
                     change={stats?.customers_change || 0}
                     comparison={`Compared to last month (${formatNumber(stats?.customers_last_month || 0)})`}
                 />
+
+                {/* Card 2: 30 Days Revenue */}
                 <MetricCard
                     icon={DollarSign}
                     label="30 Days Revenue"
                     value={formatCurrency(stats?.total_revenue || 0)}
                     change={stats?.revenue_change || 0}
+                    comparison="Compared to previous 30 days"
                 />
+
+                {/* Card 3: Top Selling Product */}
                 <div className="top-product-card">
-                    <div className="card-title">Top Selling Product</div>
+                    <div className="card-title">TOP SELLING PRODUCT</div>
                     <div className="top-product-header">
                         <div className="top-product-image">
                             <Package size={24} />
                         </div>
                         <div className="top-product-info">
-                            <div className="top-product-name">{stats?.top_product?.name || 'Hyper Buds Pro'}</div>
-                            <div className="top-product-stats">{formatNumber(stats?.top_product?.units_sold || 0)} Units Sold</div>
-                            <div className="top-product-price">{formatCurrency(stats?.top_product?.price || 0)} / unit</div>
+                            <div className="top-product-name">{stats?.top_product?.name || 'N/A'}</div>
+                            <div className="top-product-stats" style={{ color: 'var(--color-accent-green)' }}>
+                                {formatNumber(stats?.top_product?.units_sold || 0)} Units Sold
+                            </div>
+                            <div className="top-product-price">
+                                {formatCurrency(stats?.top_product?.price || 0)} / unit
+                            </div>
                         </div>
                     </div>
-                    <a href="#" className="text-sm" style={{ color: 'var(--color-accent-blue)' }}>View Analytics</a>
+                    <a href="/inventory" className="text-sm" style={{ color: 'var(--color-accent-blue)' }}>View Analytics</a>
                 </div>
-            </div>
 
-            {/* Secondary Metrics Row */}
-            <div className="dashboard-grid" style={{ marginBottom: 'var(--spacing-xl)' }}>
-                {/* Top Ordering Region */}
-                <div className="card grid-col-4">
+                {/* Card 4: Top Ordering Region */}
+                <div className="card dashboard-card">
                     <div className="card-header">
-                        <span className="card-title">Top Ordering Region</span>
-                        <span style={{ color: 'var(--color-accent-blue)', fontSize: 'var(--font-size-xs)', fontWeight: 600 }}>NORTH AMERICA</span>
+                        <span className="card-title">TOP ORDERING REGION</span>
+                        <span style={{ color: 'var(--color-accent-blue)', fontSize: 'var(--font-size-xs)', fontWeight: 600 }}>
+                            {stats?.top_regions?.[0]?.name?.toUpperCase() || 'N/A'}
+                        </span>
                     </div>
                     <div className="region-stats">
-                        {stats?.top_regions?.map((region, index) => (
+                        {stats?.top_regions?.map((region) => (
                             <div key={region.name} className="region-stat-item">
                                 <div className="region-stat-header">
                                     <span className="region-stat-name">{region.name}</span>
@@ -120,23 +123,23 @@ function Dashboard() {
                     </div>
                 </div>
 
-                {/* Average Order Value */}
-                <div className="card grid-col-4">
-                    <span className="card-title">Average Order Value</span>
+                {/* Card 5: Average Order Value */}
+                <div className="card dashboard-card">
+                    <span className="card-title">AVERAGE ORDER VALUE</span>
                     <div className="metric-card-value" style={{ marginTop: 'var(--spacing-md)' }}>
                         {formatCurrency(stats?.average_order_value || 0)}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginTop: 'var(--spacing-sm)' }}>
-                        <TrendingUp size={16} style={{ color: 'var(--color-accent-green)' }} />
+                        <TrendingUp size={16} style={{ color: stats?.aov_change >= 0 ? 'var(--color-accent-green)' : 'var(--color-accent-red)' }} />
                         <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
-                            Trending up by ${stats?.aov_change || 0} this week
+                            {stats?.aov_change >= 0 ? 'Trending up' : 'Trending down'} by ${Math.abs(stats?.aov_change || 0)} this month
                         </span>
                     </div>
                 </div>
 
-                {/* Customer Retention */}
-                <div className="card grid-col-4">
-                    <span className="card-title">Customer Retention</span>
+                {/* Card 6: Customer Retention */}
+                <div className="card dashboard-card">
+                    <span className="card-title">CUSTOMER RETENTION</span>
                     <div className="donut-chart-container" style={{ marginTop: 'var(--spacing-md)' }}>
                         <div className="donut-chart">
                             <svg width="100" height="100" viewBox="0 0 100 100">
@@ -155,53 +158,98 @@ function Dashboard() {
                                     fill="none"
                                     stroke="var(--color-accent-blue)"
                                     strokeWidth="12"
-                                    strokeDasharray={`${(stats?.customer_retention || 68) * 2.51} 251`}
+                                    strokeDasharray={`${(stats?.customer_retention || 0) * 2.51} 251`}
                                     strokeLinecap="round"
                                 />
                             </svg>
-                            <div className="donut-chart-value">{stats?.customer_retention || 68}%</div>
+                            <div className="donut-chart-value">{stats?.customer_retention || 0}%</div>
                         </div>
                         <div className="donut-chart-legend">
                             <div className="donut-chart-legend-item">
                                 <span className="donut-chart-legend-label">RETURNING</span>
-                                <span className="donut-chart-legend-value">{(stats?.returning_customers / 1000).toFixed(1)}k</span>
+                                <span className="donut-chart-legend-value">{formatNumber(stats?.returning_customers || 0)}</span>
                             </div>
                             <div className="donut-chart-legend-item">
                                 <span className="donut-chart-legend-label">NEW</span>
-                                <span className="donut-chart-legend-value">{(stats?.new_customers / 1000).toFixed(1)}k</span>
+                                <span className="donut-chart-legend-value">{formatNumber(stats?.new_customers || 0)}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Intelligence Feed */}
-            <div className="card">
-                <div className="card-header">
-                    <span style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                        HyperVerge Intelligence Feed
-                    </span>
-                    <a href="#" style={{ color: 'var(--color-accent-blue)', fontSize: 'var(--font-size-sm)' }}>
-                        View All Insights →
-                    </a>
-                </div>
-                <div className="intelligence-feed">
-                    {insights.map((insight) => (
-                        <div key={insight.id} className={`insight-card ${insight.type}`}>
-                            <div className="insight-icon">
-                                {insight.type === 'positive' ? <TrendingUp size={20} /> :
-                                    insight.type === 'warning' ? <AlertTriangle size={20} /> :
-                                        <Sparkles size={20} />}
-                            </div>
-                            <div className="insight-content">
-                                <div className="insight-title">{insight.title}</div>
-                                <div className="insight-description">{insight.description}</div>
-                            </div>
-                            <div className="insight-time">{insight.time_ago}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <style>{`
+        .dashboard-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: var(--spacing-lg);
+        }
+
+        .dashboard-card {
+          min-height: 160px;
+        }
+
+        .top-product-card {
+          background-color: var(--color-bg-card);
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          border: 1px solid var(--color-border);
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-md);
+        }
+
+        .top-product-header {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+        }
+
+        .top-product-image {
+          width: 50px;
+          height: 50px;
+          background-color: var(--color-bg-tertiary);
+          border-radius: var(--radius-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-accent-blue);
+        }
+
+        .top-product-info {
+          flex: 1;
+        }
+
+        .top-product-name {
+          font-size: var(--font-size-base);
+          font-weight: 600;
+          color: var(--color-text-primary);
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .top-product-stats {
+          font-size: var(--font-size-sm);
+          color: var(--color-accent-green);
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .top-product-price {
+          font-size: var(--font-size-sm);
+          color: var(--color-text-muted);
+        }
+
+        @media (max-width: 1200px) {
+          .dashboard-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .dashboard-cards-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
         </div>
     );
 }

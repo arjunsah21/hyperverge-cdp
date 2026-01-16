@@ -1,53 +1,119 @@
-# Dashboard API endpoints
+# Dashboard API endpoints with real CDP statistics from database
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from datetime import datetime, timedelta
 
 from app.database import get_db
-from app.models import Customer, Order, Product, Insight
-from app.schemas import DashboardStats, InsightListResponse, InsightResponse
+from app.models import Customer, Order, OrderItem, Product, Segment, Flow
+from app.schemas import DashboardStats
 
 router = APIRouter()
 
 
 @router.get("/stats", response_model=DashboardStats)
 async def get_dashboard_stats(db: Session = Depends(get_db)):
-    """Get dashboard overview statistics"""
+    """Get dashboard overview statistics calculated from real database data"""
+    
+    # Time ranges
+    now = datetime.utcnow()
+    thirty_days_ago = now - timedelta(days=30)
+    sixty_days_ago = now - timedelta(days=60)
     
     # Customer stats
     total_customers = db.query(Customer).count()
-    customers_last_month = int(total_customers * 0.91)  # Simulated previous month
-    customers_change = round(((total_customers - customers_last_month) / customers_last_month) * 100, 1) if customers_last_month > 0 else 0
     
-    # Revenue stats
-    total_revenue = db.query(func.sum(Order.total_amount)).scalar() or 0
-    revenue_change = 18.0  # Simulated change percentage
+    # Customers created before 30 days ago (existing customers last month)
+    customers_last_month = db.query(Customer).filter(Customer.created_at < thirty_days_ago).count()
+    new_customers_this_month = total_customers - customers_last_month
+    customers_change = round((new_customers_this_month / max(customers_last_month, 1)) * 100, 1)
     
-    # Order stats
-    total_orders = db.query(Order).count()
-    average_order_value = round(total_revenue / total_orders, 2) if total_orders > 0 else 0
-    aov_change = 4.50  # Simulated AOV change
+    # Revenue stats (sum of all orders in last 30 days)
+    total_revenue = db.query(func.sum(Order.total_amount)).filter(
+        Order.date >= thirty_days_ago,
+        Order.status != "Cancelled"
+    ).scalar() or 0
     
-    # Customer retention (simulated)
-    returning_customers = int(total_customers * 0.68)
-    new_customers = total_customers - returning_customers
-    customer_retention = 68.0
+    # Previous 30 days revenue for change calculation
+    prev_revenue = db.query(func.sum(Order.total_amount)).filter(
+        Order.date >= sixty_days_ago,
+        Order.date < thirty_days_ago,
+        Order.status != "Cancelled"
+    ).scalar() or 0
     
-    # Top selling product (simulated based on products)
-    top_product_data = db.query(Product).order_by(Product.price.desc()).first()
-    top_product = {
-        "name": top_product_data.name if top_product_data else "Hyper Buds Pro",
-        "units_sold": 2480,
-        "price": top_product_data.price if top_product_data else 199.00,
-        "image_url": top_product_data.image_url if top_product_data else None
-    }
+    revenue_change = round(((total_revenue - prev_revenue) / max(prev_revenue, 1)) * 100, 1) if prev_revenue > 0 else 0
     
-    # Top regions (simulated)
+    # Order stats for last 30 days
+    total_orders = db.query(Order).filter(
+        Order.date >= thirty_days_ago,
+        Order.status != "Cancelled"
+    ).count()
+    average_order_value = round(total_revenue / max(total_orders, 1), 2)
+    
+    # Calculate AOV change
+    prev_orders = db.query(Order).filter(
+        Order.date >= sixty_days_ago,
+        Order.date < thirty_days_ago,
+        Order.status != "Cancelled"
+    ).count()
+    prev_aov = round(prev_revenue / max(prev_orders, 1), 2)
+    aov_change = round(average_order_value - prev_aov, 2)
+    
+    # Customer retention (customers with more than 1 order)
+    returning_customers = db.query(Customer).filter(Customer.total_orders > 1).count()
+    new_customers = db.query(Customer).filter(Customer.total_orders <= 1).count()
+    customer_retention = round((returning_customers / max(total_customers, 1)) * 100, 1)
+    
+    # Top selling product (calculated from actual OrderItems)
+    top_product_result = db.query(
+        Product.id,
+        Product.name,
+        Product.price,
+        Product.image_url,
+        func.sum(OrderItem.quantity).label('units_sold')
+    ).join(
+        OrderItem, OrderItem.product_id == Product.id
+    ).join(
+        Order, Order.id == OrderItem.order_id
+    ).filter(
+        Order.date >= thirty_days_ago,
+        Order.status != "Cancelled"
+    ).group_by(
+        Product.id, Product.name, Product.price, Product.image_url
+    ).order_by(
+        func.sum(OrderItem.quantity).desc()
+    ).first()
+    
+    if top_product_result:
+        top_product = {
+            "name": top_product_result.name,
+            "units_sold": int(top_product_result.units_sold),
+            "price": top_product_result.price,
+            "image_url": top_product_result.image_url
+        }
+    else:
+        # Fallback if no orders
+        first_product = db.query(Product).first()
+        top_product = {
+            "name": first_product.name if first_product else "No products",
+            "units_sold": 0,
+            "price": first_product.price if first_product else 0,
+            "image_url": first_product.image_url if first_product else None
+        }
+    
+    # Top regions from customer states
+    state_counts = db.query(
+        Customer.state, 
+        func.count(Customer.id).label('count')
+    ).filter(
+        Customer.state.isnot(None)
+    ).group_by(Customer.state).order_by(func.count(Customer.id).desc()).limit(3).all()
+    
+    total_with_state = sum([s[1] for s in state_counts]) or 1
     top_regions = [
-        {"name": "United States", "percentage": 65},
-        {"name": "Canada", "percentage": 22},
-        {"name": "Mexico", "percentage": 13}
+        {"name": state, "percentage": round((count / total_with_state) * 100)}
+        for state, count in state_counts
     ]
     
     # Inventory stats
@@ -55,6 +121,14 @@ async def get_dashboard_stats(db: Session = Depends(get_db)):
     low_stock_alerts = db.query(Product).filter(Product.status == "LOW_STOCK").count()
     out_of_stock = db.query(Product).filter(Product.status == "OUT_OF_STOCK").count()
     inventory_value = db.query(func.sum(Product.price * Product.stock_level)).scalar() or 0
+    
+    # CDP specific stats
+    total_segments = db.query(Segment).count()
+    active_flows = db.query(Flow).filter(Flow.status == "active").count()
+    
+    # Email opt-in rate
+    opted_in = db.query(Customer).filter(Customer.email_opt_in == True).count()
+    email_opt_in_rate = round((opted_in / max(total_customers, 1)) * 100, 1)
     
     return DashboardStats(
         total_customers=total_customers,
@@ -73,26 +147,8 @@ async def get_dashboard_stats(db: Session = Depends(get_db)):
         total_skus=total_skus,
         low_stock_alerts=low_stock_alerts,
         out_of_stock=out_of_stock,
-        inventory_value=round(inventory_value, 2)
-    )
-
-
-@router.get("/insights", response_model=InsightListResponse)
-async def get_insights(db: Session = Depends(get_db)):
-    """Get intelligence feed insights"""
-    
-    insights = db.query(Insight).order_by(Insight.created_at.desc()).all()
-    
-    return InsightListResponse(
-        insights=[
-            InsightResponse(
-                id=insight.id,
-                title=insight.title,
-                description=insight.description,
-                type=insight.type,
-                icon=insight.icon,
-                time_ago=insight.time_ago
-            )
-            for insight in insights
-        ]
+        inventory_value=round(inventory_value, 2),
+        total_segments=total_segments,
+        active_flows=active_flows,
+        email_opt_in_rate=email_opt_in_rate
     )

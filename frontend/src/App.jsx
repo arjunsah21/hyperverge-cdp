@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Customers from './pages/Customers';
 import Orders from './pages/Orders';
 import Inventory from './pages/Inventory';
+import Segments from './pages/Segments';
+import Flows from './pages/Flows';
 
 // Create context for chat state
 export const ChatContext = createContext();
@@ -34,6 +36,8 @@ function App() {
                                 <Route path="/customers" element={<Customers />} />
                                 <Route path="/orders" element={<Orders />} />
                                 <Route path="/inventory" element={<Inventory />} />
+                                <Route path="/segments" element={<Segments />} />
+                                <Route path="/flows" element={<Flows />} />
                             </Routes>
                         </div>
                     </div>

@@ -12,13 +12,25 @@ from app.schemas import OrderResponse, OrderListResponse
 router = APIRouter()
 
 
-def get_initials(name: str) -> str:
-    """Get initials from a name"""
-    parts = name.split()
-    if len(parts) >= 2:
-        return f"{parts[0][0]}{parts[-1][0]}".upper()
-    elif len(parts) == 1:
-        return parts[0][0:2].upper()
+def get_customer_name(customer: Customer) -> str:
+    """Get full name from customer"""
+    if customer.first_name and customer.last_name:
+        return f"{customer.first_name} {customer.last_name}"
+    elif customer.first_name:
+        return customer.first_name
+    elif customer.last_name:
+        return customer.last_name
+    return customer.email.split('@')[0]
+
+
+def get_initials(first_name: str = None, last_name: str = None) -> str:
+    """Get initials from first and last name"""
+    if first_name and last_name:
+        return f"{first_name[0]}{last_name[0]}".upper()
+    elif first_name:
+        return first_name[0:2].upper()
+    elif last_name:
+        return last_name[0:2].upper()
     return "??"
 
 
@@ -42,7 +54,9 @@ async def get_orders(
         query = query.filter(
             or_(
                 Order.order_id.ilike(search_term),
-                Customer.name.ilike(search_term)
+                Customer.first_name.ilike(search_term),
+                Customer.last_name.ilike(search_term),
+                Customer.email.ilike(search_term)
             )
         )
     
@@ -70,8 +84,8 @@ async def get_orders(
                 id=o.id,
                 order_id=o.order_id,
                 customer_id=o.customer_id,
-                customer_name=o.customer.name,
-                customer_initials=get_initials(o.customer.name),
+                customer_name=get_customer_name(o.customer),
+                customer_initials=get_initials(o.customer.first_name, o.customer.last_name),
                 date=o.date,
                 status=o.status,
                 total_amount=o.total_amount
@@ -97,8 +111,8 @@ async def get_order(order_id: int, db: Session = Depends(get_db)):
         id=order.id,
         order_id=order.order_id,
         customer_id=order.customer_id,
-        customer_name=order.customer.name,
-        customer_initials=get_initials(order.customer.name),
+        customer_name=get_customer_name(order.customer),
+        customer_initials=get_initials(order.customer.first_name, order.customer.last_name),
         date=order.date,
         status=order.status,
         total_amount=order.total_amount
