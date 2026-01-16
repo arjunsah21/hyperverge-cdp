@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Users, Plus, Filter, Trash2, Edit2, Eye, ChevronRight, X } from 'lucide-react';
 import { segmentsAPI } from '../services/api';
-import StatusBadge from '../components/StatusBadge';
 import Drawer from '../components/Drawer';
 import AIInput from '../components/AIInput';
+import StatusBadge from '../components/StatusBadge';
+import '../styles/pages/Segments.css';
 
 const OPERATORS = {
     equals: 'equals',
@@ -184,16 +185,15 @@ function Segments() {
                 )}
             </div>
 
-            {/* Preview Panel */}
-            {selectedSegment && (
-                <div className="segment-preview-panel">
-                    <div className="preview-header">
-                        <h3>Preview: {selectedSegment.name}</h3>
-                        <button className="btn-icon-sm" onClick={() => setSelectedSegment(null)}>
-                            <X size={18} />
-                        </button>
-                    </div>
-                    <p className="preview-count">{previewTotal} customers match this segment</p>
+            {/* Preview Drawer */}
+            <Drawer
+                isOpen={!!selectedSegment}
+                onClose={() => setSelectedSegment(null)}
+                title={selectedSegment ? `Preview: ${selectedSegment.name}` : 'Segment Preview'}
+                width="600px"
+            >
+                <div className="segment-preview-content">
+
 
                     {previewLoading ? (
                         <div className="preview-loading">Loading...</div>
@@ -258,7 +258,7 @@ function Segments() {
                         </>
                     )}
                 </div>
-            )}
+            </Drawer>
 
             {/* Create Segment Drawer */}
             <SegmentDrawer
@@ -281,270 +281,7 @@ function Segments() {
                 }}
             />
 
-            <style>{`
-        .segments-page {
-          max-width: 100%;
-        }
 
-        .segments-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-          gap: var(--spacing-lg);
-          margin-top: var(--spacing-xl);
-        }
-
-        .segment-card {
-          background-color: var(--color-bg-card);
-          border-radius: var(--radius-lg);
-          padding: var(--spacing-lg);
-          border: 1px solid var(--color-border);
-          display: flex;
-          flex-direction: column;
-        }
-
-        .segment-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: var(--spacing-md);
-        }
-
-        .segment-card-icon {
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
-          border-radius: var(--radius-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-        }
-
-        .segment-card-actions {
-          display: flex;
-          gap: var(--spacing-xs);
-        }
-
-        .btn-icon-sm {
-          width: 28px;
-          height: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: var(--radius-sm);
-          color: var(--color-text-muted);
-          transition: all var(--transition-fast);
-        }
-
-        .btn-icon-sm:hover {
-          background-color: var(--color-bg-tertiary);
-          color: var(--color-text-primary);
-        }
-
-        .segment-card-title {
-          font-size: var(--font-size-lg);
-          font-weight: 600;
-          color: var(--color-text-primary);
-          margin-bottom: var(--spacing-xs);
-        }
-
-        .segment-card-description {
-          font-size: var(--font-size-sm);
-          color: var(--color-text-muted);
-          margin-bottom: var(--spacing-md);
-        }
-
-        .segment-card-stats {
-          display: flex;
-          gap: var(--spacing-xl);
-          margin-bottom: var(--spacing-md);
-        }
-
-        .segment-stat {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .segment-stat-value {
-          font-size: var(--font-size-xl);
-          font-weight: 700;
-          color: var(--color-text-primary);
-        }
-
-        .segment-stat-label {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-muted);
-        }
-
-        .segment-card-rules {
-          display: flex;
-          flex-wrap: wrap;
-          gap: var(--spacing-xs);
-          margin-bottom: var(--spacing-md);
-        }
-
-        .segment-rule-tag {
-          font-size: var(--font-size-xs);
-          padding: var(--spacing-xs) var(--spacing-sm);
-          background-color: var(--color-bg-tertiary);
-          border-radius: var(--radius-full);
-          color: var(--color-text-secondary);
-        }
-
-        .segment-rule-more {
-          font-size: var(--font-size-xs);
-          padding: var(--spacing-xs) var(--spacing-sm);
-          color: var(--color-accent-blue);
-        }
-
-        .segment-card-view-btn {
-          margin-top: auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: var(--spacing-xs);
-          padding: var(--spacing-sm);
-          background-color: var(--color-bg-tertiary);
-          border-radius: var(--radius-md);
-          color: var(--color-text-primary);
-          font-size: var(--font-size-sm);
-          font-weight: 500;
-          transition: all var(--transition-fast);
-        }
-
-        .segment-card-view-btn:hover {
-          background-color: var(--color-accent-blue);
-          color: white;
-        }
-
-        .segment-preview-panel {
-          position: fixed;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          width: 400px;
-          background-color: var(--color-bg-secondary);
-          border-left: 1px solid var(--color-border);
-          padding: var(--spacing-lg);
-          z-index: 100;
-          overflow-y: auto;
-        }
-
-        .preview-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: var(--spacing-md);
-        }
-
-        .preview-header h3 {
-          font-size: var(--font-size-lg);
-          font-weight: 600;
-        }
-
-        .preview-count {
-          font-size: var(--font-size-sm);
-          color: var(--color-text-muted);
-          margin-bottom: var(--spacing-lg);
-        }
-
-        .preview-loading {
-          text-align: center;
-          color: var(--color-text-muted);
-          padding: var(--spacing-xl);
-        }
-
-        .preview-customers {
-          display: flex;
-          flex-direction: column;
-          gap: var(--spacing-sm);
-        }
-
-        .preview-customer-row {
-          display: flex;
-          align-items: center;
-          gap: var(--spacing-md);
-          padding: var(--spacing-sm);
-          background-color: var(--color-bg-tertiary);
-          border-radius: var(--radius-md);
-        }
-
-        .preview-customer-info {
-          flex: 1;
-        }
-
-        .preview-customer-name {
-          font-size: var(--font-size-sm);
-          font-weight: 500;
-          color: var(--color-text-primary);
-        }
-
-        .preview-customer-meta {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-muted);
-          display: flex;
-          gap: var(--spacing-sm);
-        }
-
-        .preview-pagination {
-          margin-top: var(--spacing-lg);
-          padding-top: var(--spacing-md);
-          border-top: 1px solid var(--color-border);
-        }
-
-        .pagination-info {
-          font-size: var(--font-size-xs);
-          color: var(--color-text-muted);
-          margin-bottom: var(--spacing-sm);
-        }
-
-        .pagination-controls {
-          display: flex;
-          gap: var(--spacing-xs);
-          flex-wrap: wrap;
-        }
-
-        .pagination-btn {
-          padding: var(--spacing-xs) var(--spacing-sm);
-          background-color: var(--color-bg-tertiary);
-          border-radius: var(--radius-sm);
-          font-size: var(--font-size-xs);
-          color: var(--color-text-secondary);
-          transition: all var(--transition-fast);
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-          background-color: var(--color-bg-primary);
-          color: var(--color-text-primary);
-        }
-
-        .pagination-btn.active {
-          background-color: var(--color-accent-blue);
-          color: white;
-        }
-
-        .pagination-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .pagination-ellipsis {
-          color: var(--color-text-muted);
-          padding: var(--spacing-xs);
-        }
-
-        .empty-state, .loading-state {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: var(--spacing-2xl);
-          color: var(--color-text-muted);
-        }
-
-        .empty-state h3 {
-          margin-top: var(--spacing-md);
-          color: var(--color-text-primary);
-        }
-      `}</style>
         </div>
     );
 }
@@ -732,29 +469,7 @@ function SegmentDrawer({ segment, isOpen, onClose, onSaved }) {
                 </div>
             </div>
 
-            <style>{`
-                .form-divider {
-                    height: 1px;
-                    background-color: var(--color-border);
-                    margin: var(--spacing-lg) 0;
-                }
-                .mb-lg { margin-bottom: var(--spacing-lg); }
-                .segment-form-group { margin-bottom: var(--spacing-md); }
-                .segment-form-group label { display: block; font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; }
-                .segment-form-group input, .segment-form-group select, .segment-form-group textarea {
-                    width: 100%; padding: 8px 12px; background: var(--color-bg-tertiary);
-                    border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text-primary);
-                }
-                .segment-rules-section > label { display: block; font-size: var(--font-size-sm); font-weight: 500; color: var(--color-text-secondary); margin-bottom: 8px; }
-                .segment-rules-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-                .segment-rule-row { display: grid; grid-template-columns: 1.5fr 1.5fr 2fr auto; gap: 8px; align-items: center; }
-                .segment-rule-row select, .segment-rule-row input {
-                    width: 100%; padding: 8px 12px; background: var(--color-bg-tertiary);
-                    border: 1px solid var(--color-border); border-radius: 6px; color: var(--color-text-primary);
-                }
-                .segment-rule-remove { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); cursor: pointer; border: none; background: none; border-radius: 4px; }
-                .segment-rule-remove:hover { color: var(--color-accent-red); background-color: rgba(255,0,0,0.1); }
-            `}</style>
+
         </Drawer>
     );
 }

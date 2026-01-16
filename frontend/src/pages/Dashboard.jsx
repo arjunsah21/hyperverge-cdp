@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import { dashboardAPI } from '../services/api';
+import '../styles/pages/Dashboard.css';
 
 function Dashboard() {
     const [stats, setStats] = useState(null);

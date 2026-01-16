@@ -5,6 +5,7 @@ import Pagination from '../components/Pagination';
 import CustomerDetailsPanel from '../components/CustomerDetailsPanel';
 import OrderDetailsPanel from '../components/OrderDetailsPanel';
 import { ordersAPI } from '../services/api';
+import '../styles/pages/Orders.css';
 
 const ORDER_STATUSES = ['All Orders', 'Pending', 'Shipped', 'Delivered', 'Cancelled'];
 
@@ -200,18 +201,7 @@ function Orders() {
         }}
       />
 
-      <style>{`
-        .order-id-link {
-          color: var(--color-accent-blue);
-          font-weight: 500;
-          cursor: pointer;
-          transition: all var(--transition-fast);
-        }
 
-        .order-id-link:hover {
-          text-decoration: underline;
-        }
-      `}</style>
     </div>
   );
 }

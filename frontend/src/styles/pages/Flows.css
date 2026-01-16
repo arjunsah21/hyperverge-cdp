@@ -1,0 +1,387 @@
+.flows-page {
+    max-width: 100%;
+}
+
+.flows-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.flow-card {
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+}
+
+.flow-card-main {
+    flex: 1;
+}
+
+.flow-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.flow-card-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-cyan));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.flow-card-info {
+    flex: 1;
+}
+
+.flow-card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.flow-card-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.flow-card-steps {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.flow-step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+}
+
+.flow-step-icon {
+    width: 28px;
+    height: 28px;
+    background-color: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent-blue);
+}
+
+.flow-step-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.flow-step-subject {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.flow-step-delay {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.flow-step-connector {
+    width: 30px;
+    height: 2px;
+    background-color: var(--color-border);
+    margin-left: var(--spacing-sm);
+}
+
+.flow-card-stats {
+    display: flex;
+    gap: var(--spacing-xl);
+}
+
+.flow-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.flow-stat svg {
+    color: var(--color-text-muted);
+}
+
+.flow-stat-label {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.flow-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-end;
+}
+
+.empty-state,
+.loading-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-muted);
+}
+
+.empty-state h3 {
+    margin-top: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+/* Flow Drawer Styles */
+.form-divider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: var(--spacing-lg) 0;
+}
+
+.mb-lg {
+    margin-bottom: var(--spacing-lg);
+}
+
+.flow-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.flow-form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.flow-form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+.flow-form-group input,
+.flow-form-group select,
+.flow-form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+}
+
+.flow-steps-section>label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+}
+
+.flow-steps-list {
+    margin-bottom: 12px;
+}
+
+.flow-step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 16px;
+    background: var(--color-bg-tertiary);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.flow-step-number {
+    width: 28px;
+    height: 28px;
+    background: var(--color-accent-blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.flow-step-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.flow-step-fields input,
+.flow-step-fields textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+}
+
+.flow-step-fields input:focus,
+.flow-step-fields textarea:focus {
+    border-color: var(--color-accent-blue);
+    outline: none;
+}
+
+.flow-step-delay {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-top: 4px;
+}
+
+.flow-step-delay input {
+    width: 60px;
+    padding: 4px 8px;
+    text-align: center;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-primary);
+}
+
+.flow-step-remove {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    transition: all 0.2s;
+}
+
+.flow-step-remove:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--color-accent-red);
+}
+
+.flow-step-body {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.flow-step-delay button {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.flow-step-delay button:hover {
+    background: var(--color-bg-primary);
+    border-color: var(--color-accent-blue);
+    color: var(--color-accent-blue);
+}
+
+/* Email Preview Modal */
+.preview-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-modal {
+    background: white;
+    color: #333;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.preview-header {
+    padding: 16px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.preview-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.preview-body {
+    padding: 20px;
+}
+
+.preview-field {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.preview-field .label {
+    color: #666;
+    margin-right: 8px;
+}
+
+.preview-field .value.subject {
+    font-weight: 600;
+}
+
+.preview-content {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    min-height: 100px;
+    line-height: 1.5;
+    font-family: sans-serif;
+}

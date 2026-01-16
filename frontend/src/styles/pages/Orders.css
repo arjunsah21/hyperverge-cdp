@@ -1,0 +1,10 @@
+.order-id-link {
+    color: var(--color-accent-blue);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.order-id-link:hover {
+    text-decoration: underline;
+}

@@ -7,6 +7,7 @@ import CustomerDetailsPanel from '../components/CustomerDetailsPanel';
 import OrderDetailsPanel from '../components/OrderDetailsPanel';
 import Drawer from '../components/Drawer';
 import { customersAPI } from '../services/api';
+import '../styles/pages/Customers.css';
 
 function Customers() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -228,11 +229,7 @@ function Customers() {
                 />
             )}
 
-            <style>{`
-        .cell-customer:hover span {
-          text-decoration: underline;
-        }
-      `}</style>
+
         </div>
     );
 }
@@ -399,59 +396,7 @@ function EditCustomerModal({ customer, onClose, onSaved }) {
                 </div>
             </form>
 
-            <style>{`
-          .edit-modal-form {
-            padding: var(--spacing-lg);
-          }
 
-          .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-          }
-
-          .form-group {
-            margin-bottom: var(--spacing-md);
-          }
-
-          .form-group label {
-            display: block;
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            color: var(--color-text-secondary);
-            margin-bottom: var(--spacing-xs);
-          }
-
-          .form-group input,
-          .form-group select {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            background-color: var(--color-bg-tertiary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            color: var(--color-text-primary);
-            font-size: var(--font-size-sm);
-          }
-
-          .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            cursor: pointer;
-          }
-
-          .checkbox-group input {
-            width: auto;
-          }
-
-          .edit-modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--spacing-md);
-            padding-top: var(--spacing-md);
-            border-top: 1px solid var(--color-border);
-          }
-        `}</style>
         </Drawer>
     );
 }
