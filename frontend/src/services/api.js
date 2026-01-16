@@ -119,6 +119,10 @@ export const segmentsAPI = {
     delete: (id) => fetchAPI(`/segments/${id}`, {
         method: 'DELETE',
     }),
+    generateFromAI: (prompt) => fetchAPI('/segments/ai-generate', {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+    }),
 };
 
 // Flows API

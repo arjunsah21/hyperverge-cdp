@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Plus, Filter, Trash2, Edit2, Eye, ChevronRight, X } from 'lucide-react';
+import { Users, Plus, Filter, Trash2, Edit2, Eye, ChevronRight, X, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { segmentsAPI } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 
@@ -561,6 +561,8 @@ function SegmentModal({ segment, onClose, onSaved }) {
             : [{ field: 'state', operator: 'equals', value: '' }]
     );
     const [loading, setLoading] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
 
     const addRule = () => {
         setRules([...rules, { field: 'state', operator: 'equals', value: '' }]);
@@ -597,6 +599,35 @@ function SegmentModal({ segment, onClose, onSaved }) {
         }
     };
 
+    const handleAIGenerate = async (e) => {
+        if (e && e.preventDefault) e.preventDefault(); // Handle form submit or button click
+
+        if (!aiPrompt.trim()) return;
+
+        // Use Backend AI Service (Phase 2)
+        setAiLoading(true);
+        try {
+            const data = await segmentsAPI.generateFromAI(aiPrompt);
+
+            // Auto-fill form with AI response
+            if (data.name) setName(data.name);
+            if (data.description) setDescription(data.description);
+            if (data.logic) setLogic(data.logic);
+            if (data.rules && data.rules.length > 0) {
+                setRules(data.rules.map(r => ({
+                    field: r.field,
+                    operator: r.operator,
+                    value: r.value
+                })));
+            }
+        } catch (error) {
+            console.error('Failed to generate segment from AI:', error);
+            // Optional: Show toast error
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     return (
         <div className="segment-modal-overlay" onClick={onClose}>
             <div className="segment-modal" onClick={(e) => e.stopPropagation()}>
@@ -627,6 +658,42 @@ function SegmentModal({ segment, onClose, onSaved }) {
                             placeholder="Optional description..."
                             rows={2}
                         />
+                    </div>
+
+                    <div className="segment-ai-container">
+                        <div className="segment-ai-header">
+                            <Sparkles size={16} className="ai-icon" />
+                            <span>Describe your segment (AI)</span>
+                        </div>
+                        <div className="segment-ai-input-wrapper">
+                            <input
+                                type="text"
+                                className="segment-ai-input"
+                                placeholder="e.g. Active VIP customers from Texas who spent over $500"
+                                value={aiPrompt}
+                                onChange={(e) => setAiPrompt(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleAIGenerate();
+                                    }
+                                }}
+                                disabled={aiLoading}
+                            />
+                            <button
+                                type="button"
+                                className="segment-ai-btn"
+                                onClick={handleAIGenerate}
+                                disabled={aiLoading || !aiPrompt.trim()}
+                            >
+                                {aiLoading ? (
+                                    <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                    <ArrowRight size={16} />
+                                )}
+                            </button>
+                        </div>
+                        <div className="segment-ai-hint">Type and press Enter (or click arrow) to auto-generate rules</div>
                     </div>
 
                     <div className="segment-form-group">
@@ -758,6 +825,87 @@ function SegmentModal({ segment, onClose, onSaved }) {
           .segment-form-group select:focus {
             outline: none;
             border-color: var(--color-accent-blue);
+          }
+
+          .segment-ai-container {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--color-accent-blue);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+          }
+
+          .segment-ai-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-accent-blue);
+          }
+
+          .segment-ai-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+          }
+
+          .segment-ai-input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            padding-right: 48px; /* Space for button */
+            background-color: var(--color-bg-primary);
+            border: 1px solid var(--color-accent-blue);
+            border-radius: var(--radius-md);
+            color: var(--color-text-primary);
+            font-size: var(--font-size-sm);
+          }
+
+          .segment-ai-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-accent-blue);
+            color: white;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+          }
+
+          .segment-ai-btn:hover:not(:disabled) {
+            background-color: var(--color-accent-blue-hover, #2563eb);
+          }
+
+          .segment-ai-btn:disabled {
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-muted);
+            cursor: not-allowed;
+          }
+
+          .segment-ai-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+          }
+
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+          .animate-spin {
+            animation: spin 1s linear infinite;
+          }
+
+          .segment-ai-hint {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-muted);
+            margin-top: var(--spacing-xs);
           }
 
           .segment-rules-section {

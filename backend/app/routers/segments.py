@@ -10,8 +10,10 @@ from app.database import get_db
 from app.models import Segment, SegmentRule, Customer
 from app.schemas import (
     SegmentCreate, SegmentUpdate, SegmentResponse, SegmentListResponse,
-    SegmentCustomersResponse, SegmentRuleResponse, CustomerResponse
+    SegmentCustomersResponse, SegmentRuleResponse, CustomerResponse,
+    AISegmentRequest, AISegmentResponse, SegmentLogicEnum
 )
+from app.services import ai_service
 
 router = APIRouter()
 
@@ -412,3 +414,13 @@ async def delete_segment(segment_id: int, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": "Segment deleted successfully"}
+    
+    
+@router.post("/ai-generate", response_model=AISegmentResponse)
+async def generate_segment_ai(request: AISegmentRequest):
+    """Generate segment rules from natural language using AI"""
+    
+    # Call AI Service (Mocked or Real)
+    generated_segment = ai_service.generate_segment_from_prompt(request.prompt)
+    
+    return generated_segment

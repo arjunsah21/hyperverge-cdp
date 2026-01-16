@@ -260,6 +260,15 @@ class SegmentCustomersResponse(BaseModel):
     per_page: int
 
 
+class AISegmentRequest(BaseModel):
+    prompt: str
+
+
+class AISegmentResponse(SegmentCreate):
+    pass
+
+
+
 # ============== FLOW SCHEMAS ==============
 
 class FlowStepBase(BaseModel):
