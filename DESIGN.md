@@ -146,6 +146,11 @@ erDiagram
   - **AI Integration**: Context-aware generation of full flow structure including segment selection.
 - **`Dashboard.jsx`**:
   - Features: Real-time metrics visualization (Sales, AOV, Active Customers).
+- **`Inventory.jsx`**:
+  - Features: 
+    - **CSV Export**: Download full product list for external analysis.
+    - **Advanced Filtering**: Filter by Price Range and AI-Predicted Need via `Drawer`.
+    - **Metrics**: Stock alerts and inventory valuation.
 
 ### Backend API Design
 
@@ -163,6 +168,13 @@ erDiagram
 
 - `POST /api/segments/preview`: Preview customers matching specific rules (Dynamic Evaluation).
 - `POST /api/segments/ai-generate`: Transform natural language to segment rules.
+
+- `POST /api/segments/ai-generate`: Transform natural language to segment rules.
+
+#### Inventory Endpoints
+- `GET /api/inventory`: List products with pagination and advanced filtering (Price, Predicted Need).
+- `GET /api/inventory/stats`: Get inventory overview metrics.
+- `GET /api/inventory/{id}`: Get single product details.
 
 #### Flow Endpoints
 - `POST /api/flows/ai-generate`: Generate flow structure (Name, Steps, Segment) from prompt.

@@ -220,6 +220,22 @@ Step 3: "Your First Purchase Discount" (Delay: 5 days)
 
 ---
 
+## Inventory Management
+
+### Predicted Need Logic
+
+The system automatically categorizes products based on their stock levels to assist in inventory planning.
+
+| Status | Criteria | Description |
+|--------|----------|-------------|
+| **Order Now** | `stock_level < 20` | Critical low stock, immediate action required |
+| **Restock Soon** | `20 <= stock_level <= 50` | Low stock warning, plan purchasing |
+| **Healthy** | `stock_level > 50` | Sufficient inventory |
+
+This logic is applied dynamically when viewing inventory or filtering products.
+
+---
+
 ## Customer Data Model
 
 ### Core Customer Fields

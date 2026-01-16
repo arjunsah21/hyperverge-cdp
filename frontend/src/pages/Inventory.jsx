@@ -8,14 +8,27 @@ import {
     Package,
     AlertTriangle,
     AlertCircle,
-    Sparkles
+    Sparkles,
+    X,
+    RotateCcw,
+    Edit,
+    Trash2
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
+import Drawer from '../components/Drawer';
+import ProductDrawer from '../components/ProductDrawer';
 import { inventoryAPI } from '../services/api';
 
 const STOCK_FILTERS = ['All Items', 'Low Stock', 'Out of Stock'];
+
+const PREDICTED_NEEDS = [
+    { value: '', label: 'All' },
+    { value: 'Restock Soon', label: 'Restock Soon' },
+    { value: 'Order Now', label: 'Order Now' },
+    { value: 'Healthy', label: 'Healthy' }
+];
 
 function Inventory() {
     const [products, setProducts] = useState([]);
@@ -25,11 +38,29 @@ function Inventory() {
     const [totalItems, setTotalItems] = useState(0);
     const [search, setSearch] = useState('');
     const [activeFilter, setActiveFilter] = useState('All Items');
+
+    // Advanced Filters State
+    const [showFilterDrawer, setShowFilterDrawer] = useState(false);
+    const [filters, setFilters] = useState({
+        min_price: '',
+        max_price: '',
+        predicted_need: ''
+    });
+    const [appliedFilters, setAppliedFilters] = useState({
+        min_price: '',
+        max_price: '',
+        predicted_need: ''
+    });
+
+    // Product Drawer State
+    const [showProductDrawer, setShowProductDrawer] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     const perPage = 10;
 
     useEffect(() => {
         fetchData();
-    }, [currentPage, search, activeFilter]);
+    }, [currentPage, search, activeFilter, appliedFilters]);
 
     const fetchData = async () => {
         try {
@@ -46,6 +77,9 @@ function Inventory() {
                     per_page: perPage,
                     search: search || undefined,
                     status: statusFilter,
+                    min_price: appliedFilters.min_price || undefined,
+                    max_price: appliedFilters.max_price || undefined,
+                    predicted_need: appliedFilters.predicted_need || undefined,
                     sort_by: 'created_at',
                     sort_order: 'desc'
                 }),
@@ -62,6 +96,32 @@ function Inventory() {
         }
     };
 
+    const handleAddProduct = () => {
+        setSelectedProduct(null);
+        setShowProductDrawer(true);
+    };
+
+    const handleEditProduct = (product) => {
+        setSelectedProduct(product);
+        setShowProductDrawer(true);
+    };
+
+    const handleDeleteProduct = async (id) => {
+        if (window.confirm('Are you sure you want to delete this product?')) {
+            try {
+                await inventoryAPI.delete(id);
+                fetchData(); // Refresh list
+            } catch (error) {
+                console.error('Failed to delete product:', error);
+                alert('Failed to delete product');
+            }
+        }
+    };
+
+    const handleProductSave = (savedProduct) => {
+        fetchData(); // Refresh list
+    };
+
     const handleSearch = (e) => {
         setSearch(e.target.value);
         setCurrentPage(1);
@@ -70,6 +130,77 @@ function Inventory() {
     const handleFilterChange = (filter) => {
         setActiveFilter(filter);
         setCurrentPage(1);
+    };
+
+    const applyAdvancedFilters = () => {
+        setAppliedFilters(filters);
+        setShowFilterDrawer(false);
+        setCurrentPage(1);
+    };
+
+    const resetFilters = () => {
+        setFilters({ min_price: '', max_price: '', predicted_need: '' });
+        setAppliedFilters({ min_price: '', max_price: '', predicted_need: '' });
+        setShowFilterDrawer(false);
+        setCurrentPage(1);
+    };
+
+    const handleDownload = async () => {
+        try {
+            // Fetch all products with current filters
+            let statusFilter;
+            if (activeFilter === 'Low Stock') statusFilter = 'LOW_STOCK';
+            else if (activeFilter === 'Out of Stock') statusFilter = 'OUT_OF_STOCK';
+
+            const data = await inventoryAPI.getAll({
+                page: 1,
+                per_page: 10000, // Fetch up to 10000 items
+                search: search || undefined,
+                status: statusFilter,
+                min_price: appliedFilters.min_price || undefined,
+                max_price: appliedFilters.max_price || undefined,
+                predicted_need: appliedFilters.predicted_need || undefined,
+            });
+
+            if (!data.products || data.products.length === 0) {
+                alert('No products to download');
+                return;
+            }
+
+            // Convert to CSV
+            const headers = ['ID', 'Name', 'SKU', 'Category', 'Price', 'Stock Level', 'Status', 'Predicted Need', 'Created At'];
+            const csvRows = [headers.join(',')];
+
+            data.products.forEach(p => {
+                const row = [
+                    p.id,
+                    `"${p.name.replace(/"/g, '""')}"`, // Escape quotes
+                    p.sku,
+                    p.category || '',
+                    p.price,
+                    p.stock_level,
+                    p.status,
+                    p.predicted_need || '',
+                    p.created_at
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `inventory_export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('Failed to download inventory');
+        }
     };
 
     const formatCurrency = (value) => {
@@ -169,13 +300,18 @@ function Inventory() {
                     />
                 </div>
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-sm)' }}>
-                    <button className="btn-icon">
+                    <button
+                        className={`btn-icon ${Object.values(appliedFilters).some(v => v) ? 'active' : ''}`}
+                        onClick={() => setShowFilterDrawer(true)}
+                        title="Advanced Filters"
+                        style={Object.values(appliedFilters).some(v => v) ? { backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-accent-blue)' } : {}}
+                    >
                         <Filter size={18} />
                     </button>
-                    <button className="btn-icon">
+                    <button className="btn-icon" onClick={handleDownload} title="Export CSV">
                         <Download size={18} />
                     </button>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={handleAddProduct}>
                         <Plus size={18} />
                         Add Product
                     </button>
@@ -246,9 +382,23 @@ function Inventory() {
                                     </div>
                                 </td>
                                 <td>
-                                    <button className="action-btn">
-                                        <MoreVertical size={18} />
-                                    </button>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            className="btn-icon"
+                                            onClick={() => handleEditProduct(product)}
+                                            title="Edit"
+                                        >
+                                            <Edit size={16} />
+                                        </button>
+                                        <button
+                                            className="btn-icon"
+                                            onClick={() => handleDeleteProduct(product.id)}
+                                            title="Delete"
+                                            style={{ color: 'var(--color-accent-red)' }}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -263,6 +413,74 @@ function Inventory() {
                     onPageChange={setCurrentPage}
                 />
             </div>
+
+            {/* Filter Drawer */}
+            <Drawer
+                isOpen={showFilterDrawer}
+                onClose={() => setShowFilterDrawer(false)}
+                title="Filter Inventory"
+                width="400px"
+                actions={
+                    <>
+                        <button className="btn btn-secondary" onClick={resetFilters}>
+                            <RotateCcw size={16} /> Reset
+                        </button>
+                        <button className="btn btn-primary" onClick={applyAdvancedFilters}>
+                            Apply Filters
+                        </button>
+                    </>
+                }
+            >
+                <div style={{ padding: 'var(--spacing-md)' }}>
+                    <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Price Range</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                            <div>
+                                <input
+                                    type="number"
+                                    placeholder="Min"
+                                    value={filters.min_price}
+                                    onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                                />
+                            </div>
+                            <div>
+                                <input
+                                    type="number"
+                                    placeholder="Max"
+                                    value={filters.max_price}
+                                    onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
+                                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ marginBottom: 'var(--spacing-lg)' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>Predicted Need</label>
+                        <select
+                            value={filters.predicted_need}
+                            onChange={(e) => setFilters({ ...filters, predicted_need: e.target.value })}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                        >
+                            {PREDICTED_NEEDS.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                        <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                            Filter by AI-predicted inventory needs
+                        </p>
+                    </div>
+                </div>
+            </Drawer>
+
+            {/* Product Drawer */}
+            <ProductDrawer
+                isOpen={showProductDrawer}
+                onClose={() => setShowProductDrawer(false)}
+                checkProduct={selectedProduct}
+                onSave={handleProductSave}
+            />
         </div>
     );
 }

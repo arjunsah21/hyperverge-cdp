@@ -181,6 +181,16 @@ class ProductCreate(ProductBase):
     pass
 
 
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    sku: Optional[str] = None
+    image_url: Optional[str] = None
+    stock_level: Optional[int] = None
+    price: Optional[float] = None
+    status: Optional[StockStatusEnum] = None
+    category: Optional[str] = None
+
+
 class ProductResponse(ProductBase):
     id: int
     created_at: datetime

@@ -88,6 +88,9 @@ export const inventoryAPI = {
         if (params.search) searchParams.append('search', params.search);
         if (params.status) searchParams.append('status', params.status);
         if (params.category) searchParams.append('category', params.category);
+        if (params.min_price) searchParams.append('min_price', params.min_price);
+        if (params.max_price) searchParams.append('max_price', params.max_price);
+        if (params.predicted_need) searchParams.append('predicted_need', params.predicted_need);
         if (params.sort_by) searchParams.append('sort_by', params.sort_by);
         if (params.sort_order) searchParams.append('sort_order', params.sort_order);
 
@@ -95,6 +98,17 @@ export const inventoryAPI = {
         return fetchAPI(`/inventory${queryString ? `?${queryString}` : ''}`);
     },
     getById: (id) => fetchAPI(`/inventory/${id}`),
+    create: (data) => fetchAPI('/inventory', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    }),
+    update: (id, data) => fetchAPI(`/inventory/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    }),
+    delete: (id) => fetchAPI(`/inventory/${id}`, {
+        method: 'DELETE',
+    }),
 };
 
 // Segments API
