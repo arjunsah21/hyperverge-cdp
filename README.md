@@ -11,6 +11,7 @@ A modern, full-stack e-commerce admin dashboard built with **React** (frontend) 
 - **Order Tracking** - Status tracking, order details, and history
 - **Inventory Management** - Stock levels, low stock alerts, and categorization
 - **Customer Segments** - Create dynamic groups based on rules (e.g., "High Spenders from Texas")
+- **AI Rule Generator** 🧠 - Turn natural language queries like "VIPs from NY" into complex segment rules instantly
 - **Email Flows** - Automated email sequences triggered by segments or events
 - **Dark Theme UI** - Modern, professional design with consistent side-panel navigation
 - **RESTful API** - Scalable API architecture with FastAPI
@@ -62,7 +63,14 @@ e-comm/
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install Python dependencies:**
+3. **Configure Environment Variables:**
+   Copy the example file and add your OpenAI credentials:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your OPENAI_API_KEY
+   ```
+
+4. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
    ```

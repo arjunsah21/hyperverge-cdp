@@ -440,3 +440,32 @@ The application implements a bi-directional navigation pattern between Customer 
 
 This circular navigation allows seamless exploration of relationships:
 `Customer -> Their Order -> That Customer -> Another Order...`
+
+---
+
+## AI & System Architecture
+
+### AI Segment Generation logic
+
+The system uses OpenAI's GPT models to translate natural language into structured segment rules.
+
+- **Input**: User Query (e.g., "VIP customers in NY")
+- **Process**:
+    1.  The query is injected into a **Jinja2 System Prompt** (`segment_prompt.j2`).
+    2.  The prompt defines the Schema (Fields, Operators) and forces JSON output.
+    3.  The LLM infers intent (e.g., "VIP" -> `total_spend > 5000` or `status = 'VIP'`).
+    4.  Values are strictly type-coerced to strings to match the database schema.
+- **Output**: JSON payload with `name`, `description`, `logic`, and `rules`.
+
+### Logging Strategy
+
+To ensure reliability and debuggability, the backend implements a specialized logging strategy:
+
+- **Library**: `logging` with `colorlog` for console readability.
+- **File Storage**: Logs are stored in `backend/logs/`.
+- **Active Log**: The current day's log is always named `backend_api.log`.
+- **Rotation Policy**:
+    -   **Frequency**: Daily (Midnight).
+    -   **Retention**: 30 days.
+    -   **Naming**: Rotated files are appended with the date (e.g., `backend_api.log.2023-10-25`).
+- **Granularity**: Logs include timestamp, log level, file path, line number, and function name.
