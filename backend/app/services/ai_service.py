@@ -100,3 +100,61 @@ def generate_segment_from_prompt(user_query: str) -> Dict[str, Any]:
             "logic": "AND",
             "rules": []
         }
+
+FLOW_PROMPT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "../prompts/flow_prompt.j2")
+
+def get_flow_template() -> str:
+    try:
+        with open(FLOW_PROMPT_TEMPLATE_PATH, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        logger.warning(f"Flow prompt template not found at {FLOW_PROMPT_TEMPLATE_PATH}, using fallback.")
+        return """You are an Email Marketing Expert. Create a flow JSON from this request: {{ prompt }}"""
+
+def generate_flow_structure(prompt: str, segments: list) -> Dict[str, Any]:
+    """
+    Generates a flow structure (Name, Description, Steps) from a natural language query + segments.
+    """
+    try:
+        logger.info(f"Generating flow for query: '{prompt}' with {len(segments)} segments context")
+        
+        template_str = get_flow_template()
+        template = Template(template_str)
+        
+        # Convert segments to lightweight JSON for prompt
+        segments_json = json.dumps([
+            {"id": s.id, "name": s.name, "description": s.description} 
+            for s in segments
+        ], indent=2)
+
+        rendered_prompt = template.render(
+            prompt=prompt,
+            segments_json=segments_json
+        )
+        
+        logger.debug("Calling OpenAI API for Flow Generation...")
+        
+        response = client.chat.completions.create(
+            model=settings.OPENAI_MODEL,
+            messages=[
+                {"role": "user", "content": rendered_prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.3 # Slightly higher temp for creative copy
+        )
+        
+        content = response.choices[0].message.content
+        logger.debug(f"Received raw AI response for Flow: {content}")
+        
+        result = json.loads(content)
+        logger.info(f"Successfully generated flow: {result.get('name', 'Unnamed')}")
+        return result
+
+    except Exception as e:
+        logger.error(f"Error generating flow: {e}", exc_info=True)
+        return {
+            "name": "",
+            "description": "Error generating flow.",
+            "trigger_type": "segment",
+            "steps": []
+        }

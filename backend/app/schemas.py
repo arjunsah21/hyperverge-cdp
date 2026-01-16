@@ -271,6 +271,10 @@ class AISegmentResponse(SegmentCreate):
 
 # ============== FLOW SCHEMAS ==============
 
+class AIFlowRequest(BaseModel):
+    prompt: str
+
+
 class FlowStepBase(BaseModel):
     order: int
     step_type: str = "email"

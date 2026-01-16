@@ -154,6 +154,10 @@ export const flowsAPI = {
     deleteStep: (flowId, stepId) => fetchAPI(`/flows/${flowId}/steps/${stepId}`, {
         method: 'DELETE',
     }),
+    aiGenerate: (prompt) => fetchAPI('/flows/ai-generate', {
+        method: 'POST',
+        body: JSON.stringify({ prompt }),
+    }),
 };
 
 export default {

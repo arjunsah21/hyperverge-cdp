@@ -8,8 +8,10 @@ from app.database import get_db
 from app.models import Flow, FlowStep, Segment
 from app.schemas import (
     FlowCreate, FlowUpdate, FlowResponse, FlowListResponse,
-    FlowStepCreate, FlowStepUpdate, FlowStepResponse
+    FlowStepCreate, FlowStepUpdate, FlowStepResponse,
+    AIFlowRequest
 )
+from app.services.ai_service import generate_flow_structure
 
 router = APIRouter()
 
@@ -77,6 +79,23 @@ async def get_flow(flow_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Flow not found")
     
     return flow_to_response(flow)
+
+
+
+@router.post("/ai-generate", response_model=FlowCreate)
+async def generate_flow_ai(
+    request: AIFlowRequest,
+    db: Session = Depends(get_db)
+):
+    """Generate flow structure from prompt"""
+    
+    # Fetch all segments to provide context to AI
+    segments = db.query(Segment).all()
+    
+    # Call AI Service
+    flow_structure = generate_flow_structure(request.prompt, segments)
+    
+    return flow_structure
 
 
 @router.post("", response_model=FlowResponse)
