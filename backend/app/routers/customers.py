@@ -137,6 +137,133 @@ async def get_customer(customer_id: int, db: Session = Depends(get_db)):
     return customer_to_response(customer)
 
 
+@router.get("/{customer_id}/details")
+async def get_customer_details(customer_id: int, db: Session = Depends(get_db)):
+    """Get detailed customer data with orders and insights"""
+    from app.models import Order, OrderItem, Product
+    from sqlalchemy import func, desc
+    
+    customer = db.query(Customer).filter(Customer.id == customer_id).first()
+    
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    # Get customer orders
+    orders = db.query(Order).filter(Order.customer_id == customer_id).order_by(desc(Order.date)).all()
+    
+    # Get order items for each order
+    orders_data = []
+    for order in orders:
+        items = db.query(
+            OrderItem.quantity,
+            OrderItem.price_at_purchase,
+            Product.name.label('product_name'),
+            Product.image_url
+        ).join(Product).filter(OrderItem.order_id == order.id).all()
+        
+        orders_data.append({
+            "id": order.id,
+            "order_id": order.order_id,
+            "date": order.date.isoformat() if order.date else None,
+            "status": order.status,
+            "total_amount": order.total_amount,
+            "items": [
+                {
+                    "product_name": item.product_name,
+                    "quantity": item.quantity,
+                    "price": item.price_at_purchase,
+                    "image_url": item.image_url
+                }
+                for item in items
+            ]
+        })
+    
+    # Customer insights
+    insights = {}
+    
+    # 1. Top purchased products by quantity
+    top_products_by_qty = db.query(
+        Product.name,
+        func.sum(OrderItem.quantity).label('total_qty')
+    ).join(OrderItem).join(Order).filter(
+        Order.customer_id == customer_id
+    ).group_by(Product.name).order_by(desc(func.sum(OrderItem.quantity))).limit(3).all()
+    
+    insights['top_products_by_quantity'] = [
+        {"name": p.name, "quantity": int(p.total_qty)}
+        for p in top_products_by_qty
+    ]
+    
+    # 2. Top purchased products by value
+    top_products_by_value = db.query(
+        Product.name,
+        func.sum(OrderItem.quantity * OrderItem.price_at_purchase).label('total_value')
+    ).join(OrderItem).join(Order).filter(
+        Order.customer_id == customer_id
+    ).group_by(Product.name).order_by(desc(func.sum(OrderItem.quantity * OrderItem.price_at_purchase))).limit(3).all()
+    
+    insights['top_products_by_value'] = [
+        {"name": p.name, "value": round(float(p.total_value), 2)}
+        for p in top_products_by_value
+    ]
+    
+    # 3. Order count by status
+    order_status_counts = db.query(
+        Order.status,
+        func.count(Order.id).label('count')
+    ).filter(Order.customer_id == customer_id).group_by(Order.status).all()
+    
+    insights['order_status_breakdown'] = {
+        status: count for status, count in order_status_counts
+    }
+    
+    # 4. Monthly spending trend (last 6 months)
+    from datetime import datetime, timedelta
+    six_months_ago = datetime.utcnow() - timedelta(days=180)
+    
+    monthly_spending = db.query(
+        func.strftime('%Y-%m', Order.date).label('month'),
+        func.sum(Order.total_amount).label('total')
+    ).filter(
+        Order.customer_id == customer_id,
+        Order.date >= six_months_ago
+    ).group_by(func.strftime('%Y-%m', Order.date)).order_by('month').all()
+    
+    insights['monthly_spending'] = [
+        {"month": m.month, "amount": round(float(m.total), 2)}
+        for m in monthly_spending
+    ]
+    
+    # 5. Customer engagement metrics
+    insights['engagement'] = {
+        "days_since_first_order": (datetime.utcnow() - customer.first_order_date).days if customer.first_order_date else None,
+        "days_since_last_order": (datetime.utcnow() - customer.last_order_date).days if customer.last_order_date else None,
+        "order_frequency": round(customer.total_orders / max((datetime.utcnow() - customer.created_at).days / 30, 1), 2) if customer.total_orders else 0,
+        "email_engaged": customer.email_opt_in,
+        "sms_engaged": customer.sms_opt_in
+    }
+    
+    # 6. Customer tier based on spending
+    if customer.total_spend >= 50000:
+        tier = "Diamond"
+    elif customer.total_spend >= 20000:
+        tier = "Platinum"
+    elif customer.total_spend >= 5000:
+        tier = "Gold"
+    elif customer.total_spend >= 1000:
+        tier = "Silver"
+    else:
+        tier = "Bronze"
+    
+    insights['tier'] = tier
+    
+    return {
+        "customer": customer_to_response(customer),
+        "orders": orders_data,
+        "insights": insights
+    }
+
+
 @router.post("", response_model=CustomerResponse)
 async def create_customer(customer_data: CustomerCreate, db: Session = Depends(get_db)):
     """Create a new customer"""

@@ -252,6 +252,129 @@ Step 3: "Your First Purchase Discount" (Delay: 5 days)
 | `first_order_date` | DateTime | First purchase date |
 | `last_order_date` | DateTime | Most recent purchase |
 
+---
+
+## Customer Status Definitions
+
+Customers are assigned a status based on their engagement and purchase behavior:
+
+### Status Types
+
+| Status | Definition | Criteria |
+|--------|------------|----------|
+| **VIP** | Most valuable customers | Manually assigned OR total_spend >= $5,000 |
+| **ACTIVE** | Regular engaged buyers | Made purchase in last 60 days AND total_orders >= 3 |
+| **REGULAR** | Normal customers | Made purchase in last 90 days |
+| **NEW** | Recent signups | Created within last 30 days OR total_orders <= 1 |
+| **CHURNED** | Inactive customers | No purchase in last 120 days |
+
+### Status Transitions
+
+```
+NEW → REGULAR (after first purchase, 30+ days old)
+NEW → ACTIVE (after 3+ purchases while still engaged)
+REGULAR → ACTIVE (reaches 3+ purchases, still buying)
+ACTIVE → REGULAR (no purchase in 60 days, but within 90)
+REGULAR → CHURNED (no purchase in 120+ days)
+CHURNED → ACTIVE (makes new purchase, has 3+ orders)
+Any → VIP (manually upgraded OR hits $5,000 spend)
+```
+
+### Status Badge Colors
+
+| Status | Color |
+|--------|-------|
+| VIP | Purple (`#8b5cf6`) |
+| ACTIVE | Green (`#22c55e`) |
+| REGULAR | Blue (`#3b82f6`) |
+| NEW | Cyan (`#06b6d4`) |
+| CHURNED | Gray (`#6b7280`) |
+
+---
+
+## Customer Tier System
+
+Customers are assigned a tier based on their lifetime spending:
+
+### Tier Definitions
+
+| Tier | Spending Threshold | Benefits/Meaning |
+|------|-------------------|------------------|
+| **Diamond** | $5,000+ | Top 1% customers |
+| **Platinum** | $2,000 - $4,999 | High-value customers |
+| **Gold** | $500 - $1,999 | Solid customers |
+| **Silver** | $100 - $499 | Growing customers |
+| **Bronze** | $0 - $99 | New/low-spend customers |
+
+### Tier Calculation
+
+```python
+if total_spend >= 5000:
+    tier = "Diamond"
+elif total_spend >= 2000:
+    tier = "Platinum"
+elif total_spend >= 500:
+    tier = "Gold"
+elif total_spend >= 100:
+    tier = "Silver"
+else:
+    tier = "Bronze"
+```
+
+### Tier Badge Colors
+
+| Tier | Color |
+|------|-------|
+| Diamond | Light Blue (`#b9f2ff`) |
+| Platinum | Silver (`#e5e4e2`) |
+| Gold | Gold (`#ffd700`) |
+| Silver | Silver (`#c0c0c0`) |
+| Bronze | Bronze (`#cd7f32`) |
+
+---
+
+## Customer Insights (Detail View)
+
+When viewing a customer's details, the following insights are calculated:
+
+### Top Products by Quantity
+
+```sql
+SELECT product.name, SUM(order_items.quantity) as total_qty
+FROM products 
+JOIN order_items ON order_items.product_id = products.id
+JOIN orders ON orders.id = order_items.order_id
+WHERE orders.customer_id = {customer_id}
+GROUP BY product.name
+ORDER BY total_qty DESC
+LIMIT 3
+```
+
+### Top Products by Value
+
+```sql
+SELECT product.name, SUM(order_items.quantity * order_items.price_at_purchase) as total_value
+FROM products 
+JOIN order_items ON order_items.product_id = products.id
+JOIN orders ON orders.id = order_items.order_id
+WHERE orders.customer_id = {customer_id}
+GROUP BY product.name
+ORDER BY total_value DESC
+LIMIT 3
+```
+
+### Engagement Metrics
+
+| Metric | Calculation |
+|--------|-------------|
+| Days Since Last Order | `today - last_order_date` |
+| Days Since First Order | `today - first_order_date` |
+| Order Frequency | `total_orders / (months_as_customer)` |
+| Email Engaged | `email_opt_in = true` |
+| SMS Engaged | `sms_opt_in = true` |
+
+---
+
 ### Marketing Fields
 
 | Field | Type | Description |

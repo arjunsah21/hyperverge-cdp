@@ -44,6 +44,7 @@ export const customersAPI = {
         return fetchAPI(`/customers${queryString ? `?${queryString}` : ''}`);
     },
     getById: (id) => fetchAPI(`/customers/${id}`),
+    getDetails: (id) => fetchAPI(`/customers/${id}/details`),
     getStates: () => fetchAPI('/customers/states'),
     getSources: () => fetchAPI('/customers/sources'),
     create: (data) => fetchAPI('/customers', {
