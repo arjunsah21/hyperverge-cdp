@@ -33,8 +33,11 @@ graph TD
         APIRouter --> OrderSVC[Order Service]
         APIRouter --> SegmentSVC[Segment Service]
         APIRouter --> FlowSVC[Flow Service]
+
         APIRouter --> AnalyticsSVC[Analytics Service]
+        APIRouter --> AISVC[AI Service]
         
+        AISVC --> OpenAI[OpenAI API / Proxy]
         CustomerSVC & OrderSVC & SegmentSVC & FlowSVC --> ORM[SQLAlchemy ORM]
     end
     
@@ -137,6 +140,7 @@ erDiagram
   - Features: Status Tabs, Order Lookup, Detail View.
 - **`Segments.jsx`**:
   - Features: Rule builder for creating dynamic customer segments.
+  - **AI Integration**: Natural language input with loading state and type-writer feedback.
 - **`Dashboard.jsx`**:
   - Features: Real-time metrics visualization (Sales, AOV, Active Customers).
 
@@ -153,7 +157,16 @@ erDiagram
 - `GET /api/orders/{id}`: Get full order details.
 
 #### Segment Endpoints
+
 - `POST /api/segments/preview`: Preview customers matching specific rules (Dynamic Evaluation).
+- `POST /api/segments/ai-generate`: Transform natural language to segment rules.
+
+### AI Architecture
+- **Service Layer**: `ai_service.py` handles LLM interactions.
+- **Prompt Engineering**: Jinja2 (`segment_prompt.j2`) ensures consistent JSON output.
+- **Resilience**:
+  - **Type Coercion**: Numerics from LLM forced to strings for DB compatibility.
+  - **Fallback**: Graceful error handling returns empty rule sets.
 
 ### Security Considerations
 - **CORS**: Configured to allow frontend-backend communication.
