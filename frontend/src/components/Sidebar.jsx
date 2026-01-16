@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTheme } from '../App';
 import {
   LayoutDashboard,
   Users,
@@ -7,7 +8,9 @@ import {
   Settings,
   Zap,
   Filter,
-  Mail
+  Mail,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +24,7 @@ const navItems = [
 
 function Sidebar() {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside className="sidebar">
@@ -59,6 +63,11 @@ function Sidebar() {
           <Settings size={20} />
           <span>Settings</span>
         </NavLink>
+
+        <button onClick={toggleTheme} className="sidebar-nav-item" style={{ width: '100%', cursor: 'pointer' }}>
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+        </button>
 
         <div className="sidebar-user">
           <div className="sidebar-user-avatar">
