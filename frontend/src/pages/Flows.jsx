@@ -445,11 +445,11 @@ function FlowDrawer({ flow, isOpen, onClose, onSaved }) {
 
                                             <button
                                                 type="button"
-                                                className="btn-text btn-sm"
-                                                style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                                className="btn-preview"
                                                 onClick={() => setPreviewStep(step)}
                                             >
-                                                <Eye size={14} /> Preview
+                                                <Eye size={14} />
+                                                <span className="preview-text">Preview</span>
                                             </button>
                                         </div>
                                     </div>

@@ -20,6 +20,7 @@ import Pagination from '../components/Pagination';
 import Drawer from '../components/Drawer';
 import ProductDrawer from '../components/ProductDrawer';
 import { inventoryAPI } from '../services/api';
+import '../styles/pages/Inventory.css';
 
 const STOCK_FILTERS = ['All Items', 'Low Stock', 'Out of Stock'];
 
@@ -289,7 +290,7 @@ function Inventory() {
                         </button>
                     ))}
                 </div>
-                <div className="search-container" style={{ maxWidth: '300px' }}>
+                <div className="search-container">
                     <Search className="search-icon" size={18} />
                     <input
                         type="text"
@@ -299,7 +300,8 @@ function Inventory() {
                         onChange={handleSearch}
                     />
                 </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--spacing-sm)' }}>
+
+                <div className="inventory-actions">
                     <button
                         className={`btn-icon ${Object.values(appliedFilters).some(v => v) ? 'active' : ''}`}
                         onClick={() => setShowFilterDrawer(true)}
@@ -313,7 +315,7 @@ function Inventory() {
                     </button>
                     <button className="btn btn-primary" onClick={handleAddProduct}>
                         <Plus size={18} />
-                        Add Product
+                        <span className="btn-text">Add Product</span>
                     </button>
                 </div>
             </div>
@@ -481,7 +483,7 @@ function Inventory() {
                 checkProduct={selectedProduct}
                 onSave={handleProductSave}
             />
-        </div>
+        </div >
     );
 }
 

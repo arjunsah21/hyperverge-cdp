@@ -69,3 +69,33 @@
     gap: var(--spacing-md);
     flex-shrink: 0;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .drawer-panel {
+        width: 100% !important;
+        max-width: 100%;
+    }
+
+    .drawer-header {
+        padding: var(--spacing-md);
+    }
+
+    .drawer-header h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    .drawer-content {
+        padding: var(--spacing-md);
+    }
+
+    .drawer-actions {
+        padding: var(--spacing-md);
+        flex-direction: column;
+    }
+
+    .drawer-actions button {
+        width: 100%;
+        min-height: 48px;
+    }
+}

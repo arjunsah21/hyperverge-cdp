@@ -54,3 +54,73 @@
     padding-top: var(--spacing-md);
     border-top: 1px solid var(--color-border);
 }
+
+/* Filter Row Layout */
+.customers-filter-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-left: auto;
+}
+
+/* Reusable Filter/Sort Group */
+.filter-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-group svg {
+    position: absolute;
+    left: 12px;
+    pointer-events: none;
+    z-index: 1;
+    color: var(--color-text-muted);
+}
+
+.filter-group select {
+    padding-left: 36px;
+    /* Space for the icon */
+    min-width: 140px;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .customers-filter-row {
+        width: 100%;
+        margin-left: 0;
+        justify-content: space-between;
+        gap: var(--spacing-sm);
+    }
+
+    .status-filter,
+    .sort-container {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Hide sort label on mobile to save space */
+    .sort-label {
+        display: none;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 1rem;
+        /* Prevent iOS zoom */
+        padding: var(--spacing-md);
+    }
+
+    .edit-modal-actions {
+        flex-direction: column;
+    }
+
+    .edit-modal-actions button {
+        width: 100%;
+        min-height: 48px;
+    }
+}

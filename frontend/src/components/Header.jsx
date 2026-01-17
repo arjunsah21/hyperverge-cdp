@@ -1,6 +1,6 @@
-import { useLocation } from 'react-router-dom';
-import { Search, Bell, Bot } from 'lucide-react';
-import { useChatContext } from '../App';
+import { useLocation, Link } from 'react-router-dom';
+import { Search, Bell, Bot, Menu } from 'lucide-react';
+import { useChatContext, useSidebar } from '../App';
 import '../styles/components/Header.css';
 
 const pageTitles = {
@@ -10,15 +10,29 @@ const pageTitles = {
   '/inventory': 'Inventory Management',
   '/segments': 'Customer Segments',
   '/flows': 'Email Flows',
+  '/profile': 'My Profile',
+  '/users': 'User Management',
 };
 
 function Header() {
   const location = useLocation();
   const title = pageTitles[location.pathname] || 'Dashboard';
   const { isChatOpen, toggleChat } = useChatContext();
+  const { isSidebarOpen, openSidebar } = useSidebar();
 
   return (
     <header className="header">
+      {/* Mobile Hamburger - only show when sidebar is closed */}
+      {!isSidebarOpen && (
+        <button
+          className="header-hamburger"
+          onClick={openSidebar}
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+      )}
+
       <div className="header-title">{title}</div>
 
       <div className="header-actions">
@@ -36,19 +50,17 @@ function Header() {
           onClick={toggleChat}
         >
           <Bot size={18} />
-          <span>AI Assistant</span>
+          <span className="btn-text">AI Assistant</span>
         </button>
 
         <button className="btn-icon">
           <Bell size={18} />
         </button>
 
-        <div className="header-user-avatar">
+        <Link to="/profile" className="header-user-avatar">
           <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="User" />
-        </div>
+        </Link>
       </div>
-
-
     </header>
   );
 }

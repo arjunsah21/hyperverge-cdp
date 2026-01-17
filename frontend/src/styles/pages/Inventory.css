@@ -1,0 +1,109 @@
+/* Inventory Actions Container */
+.inventory-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-left: auto;
+    align-items: center;
+}
+
+/* Base style for Add Product text */
+.btn-text {
+    display: inline;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .inventory-page .filter-bar {
+        /* Ensure filter bar wraps correctly on mobile */
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+
+    .inventory-actions {
+        /* Ensure actions are aligned and don't overflow */
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+        /* Optionally make it sticky or fixed if needed, but flex-end works for standard flow */
+    }
+
+    /* Hide "Add Product" text on mobile to key buttons icon-only */
+    .inventory-actions .btn-text {
+        display: none;
+    }
+
+    /* Ensure buttons are large enough for touch targets */
+    .inventory-actions .btn,
+    .inventory-actions .btn-icon {
+        min-height: 40px;
+        min-width: 40px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    /* Specific tweak for the Add Product button spacing when text is hidden */
+    .inventory-actions .btn svg {
+        margin: 0;
+    }
+
+    /* Refined Layout: Search (Row 1), Filters + Actions (Row 2 Inline) */
+    .inventory-page .filter-bar {
+        align-items: center;
+        flex-direction: row;
+        /* Force row layout so wrap works correctly */
+    }
+
+    .inventory-page .search-container {
+        width: 100%;
+        flex-basis: 100%;
+        order: -1;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .inventory-page .filter-tabs {
+        flex: 1 1 0px;
+        overflow-x: auto;
+        white-space: nowrap;
+        min-width: 0;
+        padding-bottom: 0;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE/Edge */
+    }
+
+    .inventory-page .filter-tabs::-webkit-scrollbar {
+        display: none;
+        /* Chrome/Safari */
+    }
+
+    .inventory-actions {
+        width: auto;
+        margin-left: var(--spacing-sm);
+        flex-shrink: 0;
+        justify-content: flex-end;
+    }
+
+    /* Metric Cards Grid - 2 Column on Mobile */
+    .inventory-page .metric-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    /* Compact Metric Card for Mobile */
+    .inventory-page .metric-card {
+        padding: var(--spacing-md);
+    }
+
+    .inventory-page .metric-card-header {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .inventory-page .metric-card-value {
+        font-size: var(--font-size-xl);
+        /* Smaller font for better fit */
+        word-break: break-word;
+        /* Prevent overflow of long numbers */
+    }
+}

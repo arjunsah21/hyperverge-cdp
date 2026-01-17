@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, Edit2, X } from 'lucide-react';
+import { Search, Filter, Edit2, X, ArrowUpDown } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
 import Pagination from '../components/Pagination';
 import CustomerDetailsPanel from '../components/CustomerDetailsPanel';
@@ -92,38 +92,40 @@ function Customers() {
 
             {/* Filter Bar */}
             <div className="filter-bar">
-                <div className="search-container" style={{ maxWidth: '400px', flex: 1 }}>
+                <div className="search-container">
                     <Search className="search-icon" size={18} />
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="Search customers by name or email..."
+                        placeholder="Search customers..."
                         value={search}
                         onChange={handleSearch}
                     />
                 </div>
-                <div className="filter-dropdown">
-                    <Filter size={16} />
-                    <select
-                        className="select"
-                        value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
-                    >
-                        <option value="">All Statuses</option>
-                        <option value="VIP">VIP</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="REGULAR">Regular</option>
-                        <option value="NEW">New</option>
-                        <option value="CHURNED">Churned</option>
-                    </select>
-                </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)' }}>
-                    <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>SORT BY:</span>
-                    <select className="select" value={sortBy} onChange={handleSortChange}>
-                        <option value="total_spend">Highest Spend</option>
-                        <option value="total_orders">Most Orders</option>
-                        <option value="created_at">Newest</option>
-                    </select>
+                <div className="customers-filter-row">
+                    <div className="filter-group status-filter">
+                        <Filter size={16} />
+                        <select
+                            className="select"
+                            value={statusFilter}
+                            onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+                        >
+                            <option value="">All Statuses</option>
+                            <option value="VIP">VIP</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="REGULAR">Regular</option>
+                            <option value="NEW">New</option>
+                            <option value="CHURNED">Churned</option>
+                        </select>
+                    </div>
+                    <div className="filter-group sort-container">
+                        <ArrowUpDown size={16} />
+                        <select className="select" value={sortBy} onChange={handleSortChange}>
+                            <option value="total_spend">Highest Spend</option>
+                            <option value="total_orders">Most Orders</option>
+                            <option value="created_at">Newest</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

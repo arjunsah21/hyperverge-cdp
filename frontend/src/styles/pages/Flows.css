@@ -294,7 +294,7 @@
     font-family: inherit;
 }
 
-.flow-step-delay button {
+.btn-preview {
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -308,9 +308,10 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
-.flow-step-delay button:hover {
+.btn-preview:hover {
     background: var(--color-bg-primary);
     border-color: var(--color-accent-blue);
     color: var(--color-accent-blue);
@@ -384,4 +385,205 @@
     min-height: 100px;
     line-height: 1.5;
     font-family: sans-serif;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .flow-card {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+
+    /* Compact header with icon, title, and status on same row */
+    .flow-card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .flow-card-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+    }
+
+    .flow-card-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .flow-card-title {
+        font-size: var(--font-size-base);
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .flow-card-description {
+        display: none;
+        /* Hide description on mobile */
+    }
+
+    /* Status badge inline with header */
+    .flow-card-header .status-badge {
+        flex-shrink: 0;
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+
+    /* Email steps - compact horizontal row */
+    .flow-card-steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+        margin-bottom: var(--spacing-sm);
+        padding: var(--spacing-sm);
+        background: var(--color-bg-tertiary);
+        border-radius: var(--radius-sm);
+    }
+
+    .flow-step {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .flow-step-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .flow-step-connector {
+        display: none;
+    }
+
+    .flow-step-subject {
+        max-width: 80px;
+        font-size: 11px;
+    }
+
+    .flow-step-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .flow-step-delay {
+        font-size: 10px;
+    }
+
+    /* Stats - compact single row */
+    .flow-card-stats {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .flow-stat {
+        font-size: 12px;
+    }
+
+    .flow-stat svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .flow-stat-label {
+        font-size: 10px;
+    }
+
+    /* Actions - uniform icon buttons in a row */
+    .flow-card-actions {
+        display: flex;
+        flex-direction: row;
+        gap: var(--spacing-xs);
+        width: 100%;
+        padding-top: var(--spacing-sm);
+        border-top: 1px solid var(--color-border);
+    }
+
+    .flow-card-actions .btn {
+        flex: 1;
+        min-height: 40px;
+        font-size: 12px;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .flow-card-actions .btn-icon {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 auto;
+    }
+
+    /* Form styles */
+    .flow-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .flow-step-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .flow-step-number {
+        align-self: flex-start;
+    }
+
+    /* Fix delay/preview row - keep on one line, hide preview text */
+    .flow-step-delay {
+        flex-wrap: nowrap;
+        gap: 4px;
+    }
+
+    .flow-step-delay input {
+        width: 40px;
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    /* Hide "Preview" text on mobile, show only eye icon */
+    .btn-preview {
+        padding: 6px;
+        gap: 0;
+    }
+
+    .btn-preview .preview-text {
+        display: none;
+    }
+
+    .preview-modal {
+        width: 95%;
+        margin: 1rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 400px) {
+    .flow-card-title {
+        font-size: var(--font-size-sm);
+    }
+
+    .flow-step-subject {
+        max-width: 60px;
+    }
+
+    .flow-card-stats {
+        gap: var(--spacing-sm);
+    }
+
+    .flow-stat {
+        font-size: 11px;
+    }
+
+    .flow-step-delay input {
+        width: 36px;
+        padding: 3px;
+    }
+
+    .flow-step-delay span {
+        font-size: 11px;
+    }
 }

@@ -8,3 +8,22 @@
 .order-id-link:hover {
     text-decoration: underline;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .orders-filter-bar {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .orders-filter-bar .search-container {
+        order: -1;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .orders-filter-bar .filter-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+}

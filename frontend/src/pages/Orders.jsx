@@ -102,7 +102,7 @@ function Orders() {
             </button>
           ))}
         </div>
-        <div className="search-container" style={{ maxWidth: '300px', marginLeft: 'auto' }}>
+        <div className="search-container">
           <Search className="search-icon" size={18} />
           <input
             type="text"

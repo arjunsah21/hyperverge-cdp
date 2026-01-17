@@ -221,13 +221,14 @@ async def get_customer_details(customer_id: int, db: Session = Depends(get_db)):
     from datetime import datetime, timedelta
     six_months_ago = datetime.utcnow() - timedelta(days=180)
     
+    # Use PostgreSQL to_char instead of SQLite strftime
     monthly_spending = db.query(
-        func.strftime('%Y-%m', Order.date).label('month'),
+        func.to_char(Order.date, 'YYYY-MM').label('month'),
         func.sum(Order.total_amount).label('total')
     ).filter(
         Order.customer_id == customer_id,
         Order.date >= six_months_ago
-    ).group_by(func.strftime('%Y-%m', Order.date)).order_by('month').all()
+    ).group_by(func.to_char(Order.date, 'YYYY-MM')).order_by('month').all()
     
     insights['monthly_spending'] = [
         {"month": m.month, "amount": round(float(m.total), 2)}

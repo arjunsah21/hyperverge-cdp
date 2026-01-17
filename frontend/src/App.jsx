@@ -10,21 +10,27 @@ import Inventory from './pages/Inventory';
 import Segments from './pages/Segments';
 import Flows from './pages/Flows';
 
-// Create context for chat state
 // Create contexts
 export const ChatContext = createContext();
 export const ThemeContext = createContext();
+export const SidebarContext = createContext();
 
 export const useChatContext = () => useContext(ChatContext);
 export const useTheme = () => useContext(ThemeContext);
+export const useSidebar = () => useContext(SidebarContext);
 
 function App() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [theme, setTheme] = useState('dark');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const toggleChat = () => setIsChatOpen(!isChatOpen);
     const openChat = () => setIsChatOpen(true);
     const closeChat = () => setIsChatOpen(false);
+
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+    const openSidebar = () => setIsSidebarOpen(true);
+    const closeSidebar = () => setIsSidebarOpen(false);
 
     const toggleTheme = () => {
         const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -35,14 +41,16 @@ function App() {
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
             <ChatContext.Provider value={{ isChatOpen, toggleChat, openChat, closeChat }}>
-                <AuthProvider>
-                    <Router>
-                        <AppContent
-                            isChatOpen={isChatOpen}
-                            closeChat={closeChat}
-                        />
-                    </Router>
-                </AuthProvider>
+                <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar, openSidebar, closeSidebar }}>
+                    <AuthProvider>
+                        <Router>
+                            <AppContent
+                                isChatOpen={isChatOpen}
+                                closeChat={closeChat}
+                            />
+                        </Router>
+                    </AuthProvider>
+                </SidebarContext.Provider>
             </ChatContext.Provider>
         </ThemeContext.Provider>
     );

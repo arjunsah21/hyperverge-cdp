@@ -1003,15 +1003,197 @@ img {
 
   .main-content {
     margin-left: 0;
+    padding-top: 56px;
+    /* Account for fixed header */
   }
+
+  .page-content {
+    padding: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  /*
+   * ========================================
+   * MOBILE PAGE HEADER STANDARD
+   * Apply to all pages consistently
+   * ========================================
+   */
+
+  /* Page Title Section */
+  .page-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: 2px;
+  }
+
+  .page-subtitle {
+    font-size: var(--font-size-sm);
+    display: none;
+    /* Hide on mobile to save space */
+  }
+
+  /* Page Header with Actions - Standard Pattern */
+  .page-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .page-header-actions>div:first-child {
+    margin-bottom: 0;
+  }
+
+  .page-header-actions .btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+  }
+
+  /*
+   * ========================================
+   * MOBILE FILTER BAR STANDARD
+   * Search, Tabs, and Controls
+   * ========================================
+   */
 
   .filter-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
   }
 
+  /* Search always full width and first */
   .search-container {
     max-width: 100%;
+    width: 100%;
+    margin-left: 0;
+    order: -1;
+  }
+
+  /* Filter Tabs - horizontal scrollable */
+  .filter-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-xs);
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    min-height: 36px;
+  }
+
+  /* Filter controls row */
+  .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+
+  .filter-controls>* {
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+
+  /* Action buttons row (filter icons, download, add) */
+  .filter-actions,
+  .table-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+  }
+
+  .filter-actions .btn,
+  .table-actions .btn {
+    flex: 1;
+    min-height: 40px;
+    justify-content: center;
+  }
+
+  .filter-actions .btn-icon,
+  .table-actions .btn-icon {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Status filter and sort dropdown */
+  .status-filter,
+  .sort-dropdown,
+  .sort-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Metric Cards */
+  .metric-cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .metric-card-value {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Data Tables - horizontal scroll */
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 600px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+
+  /* Pagination */
+  .pagination {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pagination-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 44px;
+    /* Touch target */
+  }
+
+  /* Dashboard Grid */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
 

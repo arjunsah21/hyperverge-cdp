@@ -134,3 +134,51 @@
 .profile-save-button:disabled {
     background: #475569;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .profile-page {
+        padding: 1rem;
+    }
+
+    .profile-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+    }
+
+    .profile-avatar-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-avatar-info {
+        text-align: center;
+    }
+
+    .profile-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .profile-input {
+        padding: 0.875rem;
+        font-size: 1rem;
+        /* Prevent zoom on iOS */
+    }
+
+    .profile-message {
+        grid-column: 1;
+    }
+
+    .profile-save-button {
+        grid-column: 1;
+        width: 100%;
+        justify-self: stretch;
+        min-height: 48px;
+    }
+}

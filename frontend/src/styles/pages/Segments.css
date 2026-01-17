@@ -318,3 +318,42 @@
     color: var(--color-accent-red);
     background-color: rgba(255, 0, 0, 0.1);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .segments-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .segment-card-stats {
+        gap: var(--spacing-md);
+    }
+
+    .segment-stat-value {
+        font-size: var(--font-size-lg);
+    }
+
+    .segment-rule-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .segment-rule-row select,
+    .segment-rule-row input {
+        font-size: 1rem;
+        /* Prevent iOS zoom */
+    }
+
+    .segment-rule-remove {
+        justify-self: end;
+    }
+
+    .preview-customer-row {
+        flex-wrap: wrap;
+    }
+
+    .preview-customer-meta {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}
