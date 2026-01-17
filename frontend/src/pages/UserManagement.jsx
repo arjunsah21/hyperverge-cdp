@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, Edit2 } from 'lucide-react';
+import Drawer from '../components/Drawer';
 import '../styles/pages/UserManagement.css';
 
 const UserManagement = () => {
@@ -51,7 +52,7 @@ const UserManagement = () => {
     };
 
     const handleEditSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault(); // Handle if called from form
         try {
             const res = await api.put(`/admin/users/${editingUser.id}`, editFormData);
             setUsers(users.map(u => u.id === editingUser.id ? res : u));
@@ -85,9 +86,32 @@ const UserManagement = () => {
 
     if (loading) return <div>Loading...</div>;
 
+    // Drawer Actions
+    const drawerActions = (
+        <>
+            <button
+                type="button"
+                className="user-edit-cancel-btn"
+                onClick={() => setEditingUser(null)}
+            >
+                Cancel
+            </button>
+            <button
+                type="button"
+                className="user-edit-save-btn"
+                onClick={handleEditSubmit}
+            >
+                Save Changes
+            </button>
+        </>
+    );
+
     return (
         <div className="user-management-page">
-            <h1 className="user-management-title">User Management</h1>
+            <div className="page-header">
+                <h1 className="page-title">User Management</h1>
+                <p className="page-subtitle">Manage system users and access roles</p>
+            </div>
             <table className="user-management-table">
                 <thead>
                     <tr>
@@ -145,81 +169,69 @@ const UserManagement = () => {
                 </tbody>
             </table>
 
-            {editingUser && (
-                <div className="user-edit-modal-backdrop">
-                    <div className="user-edit-modal">
-                        <h2 className="user-edit-modal-title">Edit User</h2>
-                        <form className="user-edit-form" onSubmit={handleEditSubmit}>
-                            <div className="user-edit-form-row">
-                                <div className="user-edit-form-group">
-                                    <label className="user-edit-label">First Name</label>
-                                    <input
-                                        className="user-edit-input"
-                                        type="text"
-                                        value={editFormData.first_name}
-                                        onChange={e => setEditFormData({ ...editFormData, first_name: e.target.value })}
-                                    />
-                                </div>
-                                <div className="user-edit-form-group">
-                                    <label className="user-edit-label">Last Name</label>
-                                    <input
-                                        className="user-edit-input"
-                                        type="text"
-                                        value={editFormData.last_name}
-                                        onChange={e => setEditFormData({ ...editFormData, last_name: e.target.value })}
-                                    />
-                                </div>
-                            </div>
+            <Drawer
+                isOpen={!!editingUser}
+                onClose={() => setEditingUser(null)}
+                title="Edit User"
+                actions={drawerActions}
+                width="500px"
+            >
+                <div className="user-edit-form">
+                    <div className="user-edit-form-row">
+                        <div className="user-edit-form-group">
+                            <label className="user-edit-label">First Name</label>
+                            <input
+                                className="user-edit-input"
+                                type="text"
+                                value={editFormData.first_name}
+                                onChange={e => setEditFormData({ ...editFormData, first_name: e.target.value })}
+                            />
+                        </div>
+                        <div className="user-edit-form-group">
+                            <label className="user-edit-label">Last Name</label>
+                            <input
+                                className="user-edit-input"
+                                type="text"
+                                value={editFormData.last_name}
+                                onChange={e => setEditFormData({ ...editFormData, last_name: e.target.value })}
+                            />
+                        </div>
+                    </div>
 
-                            <div className="user-edit-form-group full-width">
-                                <label className="user-edit-label">Email</label>
-                                <input
-                                    className="user-edit-input"
-                                    type="email"
-                                    value={editFormData.email}
-                                    onChange={e => setEditFormData({ ...editFormData, email: e.target.value })}
-                                />
-                            </div>
+                    <div className="user-edit-form-group full-width">
+                        <label className="user-edit-label">Email</label>
+                        <input
+                            className="user-edit-input"
+                            type="email"
+                            value={editFormData.email}
+                            onChange={e => setEditFormData({ ...editFormData, email: e.target.value })}
+                        />
+                    </div>
 
-                            <div className="user-edit-form-group full-width">
-                                <label className="user-edit-label">Role</label>
-                                <select
-                                    className="user-edit-select"
-                                    value={editFormData.role}
-                                    onChange={e => setEditFormData({ ...editFormData, role: e.target.value })}
-                                >
-                                    <option value="VIEWER">VIEWER</option>
-                                    <option value="ADMIN">ADMIN</option>
-                                    <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                                </select>
-                            </div>
+                    <div className="user-edit-form-group full-width">
+                        <label className="user-edit-label">Role</label>
+                        <select
+                            className="user-edit-select"
+                            value={editFormData.role}
+                            onChange={e => setEditFormData({ ...editFormData, role: e.target.value })}
+                        >
+                            <option value="VIEWER">VIEWER</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                        </select>
+                    </div>
 
-                            <div className="user-edit-checkbox-group">
-                                <input
-                                    type="checkbox"
-                                    checked={editFormData.is_active}
-                                    onChange={e => setEditFormData({ ...editFormData, is_active: e.target.checked })}
-                                    id="is_active"
-                                />
-                                <label className="user-edit-checkbox-label" htmlFor="is_active">Active Account</label>
-                            </div>
-
-                            <div className="user-edit-actions">
-                                <button
-                                    type="button"
-                                    className="user-edit-cancel-btn"
-                                    onClick={() => setEditingUser(null)}
-                                >
-                                    Cancel
-                                </button>
-                                <button type="submit" className="user-edit-save-btn">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </form>
+                    <div className="user-edit-checkbox-group">
+                        <input
+                            type="checkbox"
+                            checked={editFormData.is_active}
+                            onChange={e => setEditFormData({ ...editFormData, is_active: e.target.checked })}
+                            id="is_active"
+                        />
+                        <label className="user-edit-checkbox-label" htmlFor="is_active">Active Account</label>
                     </div>
                 </div>
-            )}
+            </Drawer>
         </div>
     );
 };

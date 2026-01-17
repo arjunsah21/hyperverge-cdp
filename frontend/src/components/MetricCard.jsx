@@ -6,12 +6,13 @@ function MetricCard({
     value,
     change,
     changeLabel,
-    comparison
+    comparison,
+    className = ''
 }) {
     const isPositive = change >= 0;
 
     return (
-        <div className="metric-card">
+        <div className={`metric-card ${className}`}>
             <div className="metric-card-header">
                 <div className="metric-card-icon">
                     {Icon && <Icon size={20} />}

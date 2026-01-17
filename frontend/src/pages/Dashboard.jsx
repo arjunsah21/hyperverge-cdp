@@ -179,78 +179,7 @@ function Dashboard() {
                 </div>
             </div>
 
-            <style>{`
-        .dashboard-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: var(--spacing-lg);
-        }
 
-        .dashboard-card {
-          min-height: 160px;
-        }
-
-        .top-product-card {
-          background-color: var(--color-bg-card);
-          border-radius: var(--radius-lg);
-          padding: var(--spacing-lg);
-          border: 1px solid var(--color-border);
-          display: flex;
-          flex-direction: column;
-          gap: var(--spacing-md);
-        }
-
-        .top-product-header {
-          display: flex;
-          align-items: center;
-          gap: var(--spacing-md);
-        }
-
-        .top-product-image {
-          width: 50px;
-          height: 50px;
-          background-color: var(--color-bg-tertiary);
-          border-radius: var(--radius-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--color-accent-blue);
-        }
-
-        .top-product-info {
-          flex: 1;
-        }
-
-        .top-product-name {
-          font-size: var(--font-size-base);
-          font-weight: 600;
-          color: var(--color-text-primary);
-          margin-bottom: var(--spacing-xs);
-        }
-
-        .top-product-stats {
-          font-size: var(--font-size-sm);
-          color: var(--color-accent-green);
-          margin-bottom: var(--spacing-xs);
-        }
-
-        .top-product-price {
-          font-size: var(--font-size-sm);
-          color: var(--color-text-muted);
-        }
-
-        @media (max-width: 1200px) {
-          .dashboard-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        @media (max-width: 768px) {
-          .dashboard-cards-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
         </div>
     );
 }

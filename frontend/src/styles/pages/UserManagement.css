@@ -90,118 +90,7 @@
     background: rgba(239, 68, 68, 0.1);
 }
 
-/* Edit Modal Styles */
-.user-edit-modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
 
-.user-edit-modal {
-    background: var(--color-bg-card);
-    padding: 2rem;
-    border-radius: 1rem;
-    width: 100%;
-    max-width: 500px;
-    border: 1px solid var(--color-border);
-}
-
-.user-edit-modal-title {
-    margin-bottom: 1.5rem;
-    color: var(--color-text-primary);
-}
-
-.user-edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.user-edit-form-row {
-    display: flex;
-    gap: 1rem;
-}
-
-.user-edit-form-group {
-    flex: 1;
-}
-
-.user-edit-form-group.full-width {
-    flex: none;
-    width: 100%;
-}
-
-.user-edit-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--color-text-secondary);
-}
-
-.user-edit-input {
-    width: 100%;
-    padding: 0.5rem;
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-    border-radius: 0.25rem;
-    box-sizing: border-box;
-}
-
-.user-edit-select {
-    width: 100%;
-    padding: 0.5rem;
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-    border-radius: 0.25rem;
-}
-
-.user-edit-checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.user-edit-checkbox-label {
-    color: var(--color-text-primary);
-}
-
-.user-edit-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.user-edit-cancel-btn {
-    flex: 1;
-    padding: 0.75rem;
-    background: transparent;
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-    border-radius: 0.5rem;
-    cursor: pointer;
-}
-
-.user-edit-save-btn {
-    flex: 1;
-    padding: 0.75rem;
-    background: #3b82f6;
-    border: none;
-    color: white;
-    border-radius: 0.5rem;
-    cursor: pointer;
-}
-
-.user-edit-save-btn:hover {
-    opacity: 0.9;
-}
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
@@ -242,19 +131,7 @@
         padding: 0.375rem;
     }
 
-    /* Modal - full screen on mobile */
-    .user-edit-modal {
-        margin: 1rem;
-        padding: 1.5rem;
-        max-width: calc(100% - 2rem);
-        max-height: calc(100vh - 2rem);
-        overflow-y: auto;
-    }
 
-    .user-edit-modal-title {
-        font-size: 1.25rem;
-        margin-bottom: 1rem;
-    }
 
     .user-edit-form-row {
         flex-direction: column;
