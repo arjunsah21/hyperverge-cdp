@@ -96,7 +96,7 @@ For a deeper dive into the system's architecture and logic, refer to the followi
    pip install -r requirements.txt
    ```
 
-4. **Start the FastAPI server:**
+5. **Start the FastAPI server:**
    ```bash
    uvicorn app.main:app --reload --port 8000
    ```
@@ -106,7 +106,19 @@ For a deeper dive into the system's architecture and logic, refer to the followi
    - **API Documentation:** `http://localhost:8000/docs` (Swagger UI)
    - **Alternative Docs:** `http://localhost:8000/redoc`
 
-> **Note:** The database is automatically created and seeded with dummy data on first run.
+> **Note:** On first run, the system **automatically** performs database migrations and seeds demo data. No manual setup required!
+
+
+### 🔐 Default Super Admin Credentials
+
+After starting the backend, you can login with:
+
+| Field | Value |
+|-------|-------|
+| **Email** | `admin@hyperverge.co` |
+| **Password** | `admin123` |
+
+> ⚠️ **Security Note:** Change these credentials in production!
 
 ### Frontend Setup
 
@@ -189,13 +201,21 @@ For a deeper dive into the system's architecture and logic, refer to the followi
 - **Pydantic** - Data validation
 - **Uvicorn** - ASGI server
 
-## 📊 Dummy Data
+## 📊 Demo Data (Auto-Seeded)
 
-The application comes pre-seeded with:
-- **60 customers** with varied statuses (VIP, Active, Regular, New)
-- **200+ orders** linked to customers
-- **50 products** across multiple categories
-- **6 intelligence insights** for the dashboard feed
+On first startup, the backend automatically seeds the database with:
+
+| Entity | Count | Description |
+|--------|-------|-------------|
+| **Super Admin** | 1 | Default admin user for login |
+| **Customers** | 150 | Varied statuses (VIP, Active, Regular, New, Churned) |
+| **Orders** | 1,200 | With order items linked to products |
+| **Products** | 20 | Electronics, Audio, Wearables, Accessories, Storage |
+| **Segments** | 5 | High-Value, Texas, Gmail Users, Recent Buyers, VIP |
+| **Flows** | 3 | Welcome Series, Abandoned Cart, Re-engagement |
+| **Insights** | 6 | Dashboard intelligence feed alerts |
+
+The seeding is **idempotent** - running the backend multiple times won't duplicate data.
 
 ## 🔧 Development
 
