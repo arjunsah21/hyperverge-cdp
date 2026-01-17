@@ -49,6 +49,12 @@ class FlowTrigger(str, enum.Enum):
     MANUAL = "manual"
 
 
+class UserRole(str, enum.Enum):
+    SUPER_ADMIN = "SUPER_ADMIN"
+    ADMIN = "ADMIN"
+    VIEWER = "VIEWER"
+
+
 # ============== CUSTOMER MODEL (Extended for CDP) ==============
 
 class Customer(Base):
@@ -245,3 +251,21 @@ class Insight(Base):
     icon = Column(String, nullable=True)
     time_ago = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+# ============== USER MODEL (Auth & Profile) ==============
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    role = Column(String, default=UserRole.VIEWER)  # SUPER_ADMIN, ADMIN, VIEWER
+    avatar_url = Column(String, nullable=True)  # Path to stored image
+    verification_code = Column(String, nullable=True)
+    is_active = Column(Boolean, default=False) # Changed default to False for verification
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -405,3 +405,60 @@ class InventoryStats(BaseModel):
     low_stock_alerts: int
     out_of_stock: int
     inventory_value: float
+
+# ============== USER SCHEMAS ==============
+
+class UserBase(BaseModel):
+    email: EmailStr
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+
+class UserCreate(UserBase):
+    password: str
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
+
+class UserOut(UserBase):
+    id: int
+    role: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class UserAdminUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+
+class VerifyEmail(BaseModel):
+    email: EmailStr
+    code: str
+
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+class ResetPassword(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str

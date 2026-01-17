@@ -1,4 +1,5 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../App';
 import {
   LayoutDashboard,
@@ -10,7 +11,9 @@ import {
   Filter,
   Mail,
   Sun,
-  Moon
+  Moon,
+  LogOut,
+  User
 } from 'lucide-react';
 
 
@@ -28,6 +31,18 @@ const navItems = [
 function Sidebar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  // Convert relative URL to absolute for display if needed, or use proxy
+  const avatarSrc = user?.avatar_url
+    ? (user.avatar_url.startsWith('http') ? user.avatar_url : `http://localhost:8000${user.avatar_url}`)
+    : `https://ui-avatars.com/api/?name=${user?.first_name}+${user?.last_name}&background=random`
 
   return (
     <aside className="sidebar">
@@ -62,9 +77,16 @@ function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <NavLink to="/settings" className="sidebar-nav-item">
-          <Settings size={20} />
-          <span>Settings</span>
+        {user?.role === 'SUPER_ADMIN' && (
+          <NavLink to="/users" className={`sidebar-nav-item ${location.pathname === '/users' ? 'active' : ''}`}>
+            <Users size={20} />
+            <span>Manage Users</span>
+          </NavLink>
+        )}
+
+        <NavLink to="/profile" className={`sidebar-nav-item ${location.pathname === '/profile' ? 'active' : ''}`}>
+          <User size={20} />
+          <span>My Profile</span>
         </NavLink>
 
         <button onClick={toggleTheme} className="sidebar-nav-item" style={{ width: '100%', cursor: 'pointer' }}>
@@ -74,12 +96,15 @@ function Sidebar() {
 
         <div className="sidebar-user">
           <div className="sidebar-user-avatar">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="User" />
+            <img src={avatarSrc} alt="User" />
           </div>
           <div className="sidebar-user-info">
-            <span className="sidebar-user-name">Alex Rivera</span>
-            <span className="sidebar-user-role">Administrator</span>
+            <span className="sidebar-user-name">{user?.first_name} {user?.last_name}</span>
+            <span className="sidebar-user-role">{user?.role}</span>
           </div>
+          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', marginLeft: 'auto' }}>
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
 

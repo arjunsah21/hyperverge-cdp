@@ -13,6 +13,8 @@ A modern, full-stack e-commerce admin dashboard built with **React** (frontend) 
 - **Customer Segments** - Create dynamic groups based on rules (e.g., "High Spenders from Texas")
 - **AI Rule Generator** 🧠 - Turn natural language queries like "VIPs from NY" into complex segment rules instantly
 - **Email Flows** - Automated email sequences triggered by segments or events
+- **User Management** 👥 - Role-Based Access Control (Super Admin, Admin, Viewer) with user editing and deletion.
+- **Theme Support** 🌓 - Fully supported Light and Dark modes with a system-wide toggle.
 - **Dark Theme UI** - Modern, professional design with consistent side-panel navigation
 - **RESTful API** - Scalable API architecture with FastAPI
 

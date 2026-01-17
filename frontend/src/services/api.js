@@ -6,13 +6,29 @@ const API_BASE_URL = '/api';
 async function fetchAPI(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
 
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+
+    const headers = {
+        // Only set Content-Type if body is not FormData or URLSearchParams
+        ...((options.body instanceof FormData || options.body instanceof URLSearchParams) ? {} : { 'Content-Type': 'application/json' }),
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...options.headers
     };
 
-    const response = await fetch(url, { ...defaultOptions, ...options });
+    const config = {
+        ...options,
+        headers
+    };
+
+    const response = await fetch(url, config);
+
+    if (response.status === 401) {
+        // Token expired or invalid
+        localStorage.removeItem('token');
+        // Ideally redirect to login, but let consumer handle it or reload
+        // window.location.href = '/login'; 
+    }
 
     if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`);
@@ -20,6 +36,30 @@ async function fetchAPI(endpoint, options = {}) {
 
     return response.json();
 }
+
+const api = {
+    get: (endpoint) => fetchAPI(endpoint, { method: 'GET' }),
+    post: (endpoint, body, options = {}) => {
+        const isFormData = body instanceof FormData || body instanceof URLSearchParams;
+        return fetchAPI(endpoint, {
+            method: 'POST',
+            body: isFormData ? body : JSON.stringify(body),
+            ...options
+        });
+    },
+    put: (endpoint, body) => {
+        const isFormData = body instanceof FormData || body instanceof URLSearchParams;
+        return fetchAPI(endpoint, {
+            method: 'PUT',
+            body: isFormData ? body : JSON.stringify(body)
+        });
+    },
+    delete: (endpoint) => fetchAPI(endpoint, { method: 'DELETE' }),
+    // expose raw fetch for special cases
+    fetch: fetchAPI
+};
+
+export default api;
 
 // Dashboard API
 export const dashboardAPI = {
@@ -174,11 +214,4 @@ export const flowsAPI = {
     }),
 };
 
-export default {
-    dashboard: dashboardAPI,
-    customers: customersAPI,
-    orders: ordersAPI,
-    inventory: inventoryAPI,
-    segments: segmentsAPI,
-    flows: flowsAPI,
-};
+// export default api; // Removed duplicate

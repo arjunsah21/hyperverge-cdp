@@ -156,7 +156,17 @@ erDiagram
   - Features: 
     - **CSV Export**: Download full product list for external analysis.
     - **Advanced Filtering**: Filter by Price Range and AI-Predicted Need via `Drawer`.
+    - **Advanced Filtering**: Filter by Price Range and AI-Predicted Need via `Drawer`.
     - **Metrics**: Stock alerts and inventory valuation.
+- **`UserManagement.jsx`** (Super Admin Only):
+  - Features:
+    - **User Table**: List users with badges for status and roles.
+    - **CRUD Operations**: Edit user details (Modal), Delete users (Confirmation), Change roles.
+    - **RBAC**: Protected route, accessible only to `SUPER_ADMIN`.
+  - **Login.jsx**:
+    - Features: Authentication, Sign Up, Forgot Password flows.
+    - **Theme Support**: System-wide dark/light mode toggle.
+    - **Security**: Password visibility toggle, branded UI.
 
 ### Backend API Design
 
@@ -184,6 +194,12 @@ erDiagram
 
 #### Flow Endpoints
 - `POST /api/flows/ai-generate`: Generate flow structure (Name, Steps, Segment) from prompt.
+
+#### Admin Endpoints (Super Admin)
+- `GET /admin/users`: List all system users.
+- `PUT /admin/users/{id}`: Update user details (Name, Email, Role, Active Status).
+- `PUT /admin/users/{id}/role`: Update user role specific shortcut.
+- `DELETE /admin/users/{id}`: Delete a user account.
 
 ### AI Architecture
 - **Service Layer**: `ai_service.py` handles LLM interactions.

@@ -6,7 +6,8 @@ from contextlib import asynccontextmanager
 
 from app.database import engine, Base
 from app.seed_data import seed_database
-from app.routers import dashboard, customers, orders, inventory, segments, flows
+from fastapi.staticfiles import StaticFiles
+from app.routers import dashboard, customers, orders, inventory, segments, flows, auth, users, admin
 from app.core.logger import setup_logging
 
 
@@ -17,8 +18,8 @@ async def lifespan(app: FastAPI):
     logger.info("Application starting up... Logging initialized.")
 
     # Create tables and seed data on startup
-    Base.metadata.create_all(bind=engine)
-    seed_database()
+    # Base.metadata.create_all(bind=engine) # Alembic handles this now
+    seed_database() # Seeding should probably be done manually or via migration script in real apps, but kept for logic
     yield
 
 
@@ -38,7 +39,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 # Include routers
+app.include_router(auth.router, prefix="/api", tags=["Authentication"])
+app.include_router(admin.router, prefix="/api", tags=["Admin"])
+app.include_router(users.router, prefix="/api", tags=["Users"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(customers.router, prefix="/api/customers", tags=["Customers"])
 app.include_router(orders.router, prefix="/api/orders", tags=["Orders"])

@@ -432,6 +432,33 @@ LIMIT 3
 - `PUT /api/flows/{id}/steps/{step_id}` - Update step
 - `DELETE /api/flows/{id}/steps/{step_id}` - Delete step
 
+---
+
+## User Management & Access Control
+
+The platform implements a Role-Based Access Control (RBAC) system to ensure security and proper separation of duties.
+
+### User Roles
+
+| Role | Description | Permissions |
+|------|-------------|-------------|
+| **SUPER_ADMIN** | System Owner | Full access to all modules, **Manage Users** (Create, Edit, Delete employees), Change user roles. |
+| **ADMIN** | Manager/Operator | Full access to Dashboard, Customers, Orders, Segments, Flows, and Inventory. Cannot manage other users. |
+| **VIEWER** | Analyst/Observer | Read-only access to data. Cannot modify customer data, create segments, or launch flows. |
+
+### User Administration (Super Admin Only)
+
+Super Admins have exclusive access to the **Manage Users** page (`/users`), where they can:
+- **View All Users**: List of all registered employees with their statuses and roles.
+- **Edit User**: Update a user's name, email, role, or active status.
+- **Delete User**: Permanently remove a user account (cannot delete own account).
+- **Change Roles**: Promote or demote users between Viewer, Admin, and Super Admin.
+
+### Authentication & Security
+- **JWT Authentication**: Secure stateless authentication using JSON Web Tokens.
+- **Password Security**: Passwords are hashed using `bcrypt` before storage.
+- **Account Locking**: Inactive accounts can be disabled by Super Admins, preventing login.
+
 ## UI Flow Documentation
 
 ### Customer & Order Navigation
