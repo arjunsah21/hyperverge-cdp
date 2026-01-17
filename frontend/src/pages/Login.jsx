@@ -134,8 +134,21 @@ const Login = () => {
           {/* CODE FIELD - Verify, Reset */}
           {(mode === 'verify' || mode === 'reset') && (
             <div className="login-form-group">
-              <label className="login-label">Verification Code</label>
-              <input className="login-input" type="text" value={code} onChange={(e) => setCode(e.target.value)} placeholder="Enter 6-digit code" required />
+              <label className="login-label">Verification Code (6-digit)</label>
+              <input
+                className="login-input"
+                type="text"
+                value={code}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                  setCode(val);
+                }}
+                placeholder="123456"
+                required
+                maxLength={6}
+                inputMode="numeric"
+                pattern="\d{6}"
+              />
             </div>
           )}
 
