@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
             params.append("username", email);
             params.append("password", password);
 
-            const response = await api.post("/token", params, {
+            const response = await api.post("/auth/token", params, {
                 // Content-Type will be set automatically by browser/fetch for URLSearchParams
                 // or we can explicit set it, but usually standard fetch handles it.
                 // Actually for URLSearchParams fetch sets application/x-www-form-urlencoded;charset=UTF-8
