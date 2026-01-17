@@ -1,6 +1,6 @@
 # HyperVerge CDP - Business Logic Documentation
 
-This document explains the core business logic, calculations, and features of the Customer Data Platform.
+This document explains the core business logic, calculations, and features of the Customer Data Platform found in the PostgreSQL database.
 
 ---
 

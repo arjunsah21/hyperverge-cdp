@@ -6,7 +6,7 @@
 The application follows a modern 3-tier architecture:
 - **Frontend**: React.js Single Page Application (SPA) utilizing functional components, hooks, and React Router for navigation.
 - **Backend**: FastAPI (Python) providing RESTful APIs.
-- **Database**: SQLite (SQLAlchemy ORM) for data persistence.
+- **Database**: PostgreSQL (SQLAlchemy ORM) for data persistence.
 
 ### Component Diagram
 ```mermaid
@@ -41,7 +41,7 @@ graph TD
         CustomerSVC & OrderSVC & SegmentSVC & FlowSVC --> ORM[SQLAlchemy ORM]
     end
     
-    ORM --> DB[(SQLite Database)]
+    ORM --> DB[(PostgreSQL Database)]
 ```
 
 ### Data Flow
@@ -51,6 +51,12 @@ graph TD
 4. **Business Logic**: Service layer executes business rules (e.g., segment evaluation, tier calculation).
 5. **Data Access**: SQLAlchemy translates operations to SQL queries.
 6. **Response**: Data is returned to frontend and state is updated.
+
+### Database Migration Strategy
+The application uses **Alembic** for handling database schema migrations. This allows for:
+- Version control of the database schema.
+- Automatic generation of migration scripts from SQLAlchemy models.
+- Safe upgrades and downgrades of the database structure.
 
 ---
 
