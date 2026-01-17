@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from app.database import get_db
 from app import models, auth, schemas
+from app.utils.email import send_verification_email
 
 router = APIRouter(tags=["Authentication"])
 
@@ -36,7 +37,7 @@ def generate_verification_code(length=6):
     return ''.join(random.choices(string.digits, k=length))
 
 @router.post("/register", response_model=schemas.UserOut)
-def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+async def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -44,10 +45,9 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     hashed_password = auth.get_password_hash(user.password)
     code = generate_verification_code()
     
-    # In a real app, send this via email. Here we print to console.
-    print(f"==========================================")
-    print(f"VERIFICATION CODE for {user.email}: {code}")
-    print(f"==========================================")
+    # Send verification email
+    # Background tasks would be better for performance, but awaiting here for simplicity
+    await send_verification_email(user.email, code)
     
     new_user = models.User(
         email=user.email,
@@ -82,7 +82,7 @@ def verify_email(data: schemas.VerifyEmail, db: Session = Depends(get_db)):
     return {"message": "Email verified successfully. You can now login."}
 
 @router.post("/forgot-password")
-def forgot_password(data: schemas.ForgotPassword, db: Session = Depends(get_db)):
+async def forgot_password(data: schemas.ForgotPassword, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == data.email).first()
     if not user:
         # Don't reveal user existence
@@ -92,9 +92,7 @@ def forgot_password(data: schemas.ForgotPassword, db: Session = Depends(get_db))
     user.verification_code = code
     db.commit()
     
-    print(f"==========================================")
-    print(f"PASSWORD RESET CODE for {user.email}: {code}")
-    print(f"==========================================")
+    await send_verification_email(user.email, code)
     
     return {"message": "Verification code sent to email."}
 

@@ -42,6 +42,10 @@ graph TD
     end
     
     ORM --> DB[(PostgreSQL Database)]
+
+    EmailService[Email Service]
+    Frontend -->|OTP Verification| APIRouter
+    APIRouter --> EmailService -->|SMTP| SMTP[SMTP Server]
 ```
 
 ### Data Flow
@@ -57,6 +61,20 @@ The application uses **Alembic** for handling database schema migrations. This a
 - Version control of the database schema.
 - Automatic generation of migration scripts from SQLAlchemy models.
 - Safe upgrades and downgrades of the database structure.
+
+### Authentication & Security
+The authentication system is built on **OAuth2 with Password Flow (Bearer Token)** and **JWT**.
+
+#### verification Flow (OTP)
+1.  **Sign Up**: User submits details -> Backend generates random 6-digit code -> Sends via SMTP -> User remains `is_active=False`.
+2.  **Verify**: User enters code -> Backend matches `verification_code` -> User becomes `is_active=True`.
+3.  **Login**: Only active users can obtain a JWT access token.
+4.  **Password Reset**: Request -> OTP sent -> Verify & Reset Password.
+
+#### Role Based Access Control (RBAC)
+- **Super Admin**: Full system access (User Management).
+- **Admin**: Dashboard & Store operations (cannot delete users).
+- **Viewer**: Read-only access to Dashboard.
 
 ---
 
@@ -200,6 +218,13 @@ erDiagram
 - `PUT /admin/users/{id}`: Update user details (Name, Email, Role, Active Status).
 - `PUT /admin/users/{id}/role`: Update user role specific shortcut.
 - `DELETE /admin/users/{id}`: Delete a user account.
+
+#### Authentication Endpoints (`/api/auth`)
+- `POST /register`: Register new user and send OTP.
+- `POST /verify`: Verify email with OTP.
+- `POST /token`: Login to get access token.
+- `POST /forgot-password`: Initiate password reset flow.
+- `POST /reset-password`: Complete password reset with OTP.
 
 ### AI Architecture
 - **Service Layer**: `ai_service.py` handles LLM interactions.
