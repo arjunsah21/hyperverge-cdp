@@ -1,120 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-
-const PageContainer = styled.div`
-  padding: 2rem;
-  color: var(--color-text-primary);
-  max-width: 800px;
-  margin: 0 auto;
-`;
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-`;
-
-const Card = styled.div`
-  background: var(--color-bg-card);
-  border-radius: 1rem;
-  padding: 2rem;
-  border: 1px solid var(--color-border);
-`;
-
-const AvatarSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--color-border);
-`;
-
-const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #3b82f6;
-  background: var(--color-bg-primary);
-`;
-
-const UploadButton = styled.label`
-  background: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  input {
-    display: none;
-  }
-`;
-
-const Form = styled.form`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Label = styled.label`
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-`;
-
-const Input = styled.input`
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  outline: none;
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    border-color: #3b82f6;
-  }
-`;
-
-const SaveButton = styled.button`
-  grid-column: span 2;
-  background: #22c55e;
-  color: white;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  margin-top: 1rem;
-  width: fit-content;
-  justify-self: end;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:disabled {
-    background: #475569;
-  }
-`;
+import '../styles/pages/Profile.css';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -174,53 +61,59 @@ const Profile = () => {
     : `https://ui-avatars.com/api/?name=${user.first_name}+${user.last_name}&background=random`;
 
   return (
-    <PageContainer>
-      <Title>My Profile</Title>
-      <Card>
-        <AvatarSection>
-          <Avatar src={avatarSrc} alt="Profile" />
-          <div>
-            <h3 style={{ marginBottom: '0.5rem' }}>{user.first_name} {user.last_name}</h3>
-            <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>{user.role}</p>
-            <UploadButton>
+    <div className="profile-page">
+      <h1 className="profile-title">My Profile</h1>
+      <div className="profile-card">
+        <div className="profile-avatar-section">
+          <img className="profile-avatar" src={avatarSrc} alt="Profile" />
+          <div className="profile-avatar-info">
+            <h3>{user.first_name} {user.last_name}</h3>
+            <p className="profile-avatar-role">{user.role}</p>
+            <label className="profile-upload-button">
               Change Avatar
               <input type="file" accept="image/*" onChange={handleAvatarUpload} />
-            </UploadButton>
+            </label>
           </div>
-        </AvatarSection>
+        </div>
 
-        <Form onSubmit={handleUpdateProfile}>
-          <FormGroup>
-            <Label>First Name</Label>
-            <Input
+        <form className="profile-form" onSubmit={handleUpdateProfile}>
+          <div className="profile-form-group">
+            <label className="profile-label">First Name</label>
+            <input
+              className="profile-input"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
-          </FormGroup>
-          <FormGroup>
-            <Label>Last Name</Label>
-            <Input
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-label">Last Name</label>
+            <input
+              className="profile-input"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
-          </FormGroup>
-          <FormGroup>
-            <Label>Email</Label>
-            <Input value={user.email} disabled />
-          </FormGroup>
-          <FormGroup>
-            <Label>Role</Label>
-            <Input value={user.role} disabled />
-          </FormGroup>
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-label">Email</label>
+            <input className="profile-input" value={user.email} disabled />
+          </div>
+          <div className="profile-form-group">
+            <label className="profile-label">Role</label>
+            <input className="profile-input" value={user.role} disabled />
+          </div>
 
-          {message && <p style={{ gridColumn: 'span 2', color: message.includes('success') ? '#22c55e' : '#ef4444' }}>{message}</p>}
+          {message && (
+            <p className={`profile-message ${message.includes('success') ? 'success' : 'error'}`}>
+              {message}
+            </p>
+          )}
 
-          <SaveButton type="submit" disabled={loading}>
+          <button className="profile-save-button" type="submit" disabled={loading}>
             {loading ? 'Saving...' : 'Save Changes'}
-          </SaveButton>
-        </Form>
-      </Card>
-    </PageContainer>
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
