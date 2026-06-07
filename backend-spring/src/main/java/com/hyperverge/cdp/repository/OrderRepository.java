@@ -1,0 +1,11 @@
+package com.hyperverge.cdp.repository;
+
+import com.hyperverge.cdp.domain.CustomerOrder;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.List;
+
+public interface OrderRepository extends JpaRepository<CustomerOrder, Long>, JpaSpecificationExecutor<CustomerOrder> {
+    List<CustomerOrder> findByCustomerIdOrderByDateDesc(Long customerId);
+}
